@@ -9,7 +9,7 @@ Colorfold is a compact connection puzzle for early design exploration.
 - Each of the nine internal corners has a clockwise-rotation control. It rotates
   the four surrounding squares by 90 degrees clockwise.
 - The puzzle is solved when the squares of every colour each form a single
-  orthogonally connected component. Diagonal contact does not count.
+  edge-connected component. Diagonal contact does not count.
 
 ## Prototype decisions
 
