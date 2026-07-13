@@ -55,7 +55,7 @@ button { font: inherit; }
 }
 
 .info-button { right: 14px; }
-.number-button { left: 14px; font-size: .68rem; letter-spacing: -.04em; }
+.number-button { left: 14px; width: 38px; border-radius: 999px; font-size: .68rem; letter-spacing: -.04em; white-space: nowrap; }
 .info-button:hover, .info-button[aria-expanded="true"], .number-button:hover, .number-button.is-active { background: var(--button-hover); color: var(--ink); }
 
 .info-panel {
