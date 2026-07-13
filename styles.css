@@ -141,7 +141,7 @@ h1 { position: relative; display: inline-block; margin: 0; font-size: clamp(2rem
 .cheat-row button:hover:not(:disabled) { background: var(--button-hover); color: var(--ink); }
 .cheat-row button:disabled { cursor: default; opacity: .48; }
 
-.cheat-dialog { width: min(330px, calc(100% - 36px)); padding: 0; border: 1px solid var(--tile-border); border-radius: 17px; color: var(--ink); background: var(--panel); box-shadow: 0 20px 48px rgba(45,62,76,.22); }
+.cheat-dialog { width: min(330px, calc(100% - 36px)); padding: 0; border: 1px solid var(--tile-border); border-radius: 17px; color: var(--ink); background: #fbfdff; box-shadow: 0 20px 48px rgba(45,62,76,.22); }
 .cheat-dialog::backdrop { background: rgba(36,48,58,.24); }
 .cheat-dialog form { padding: 20px; }
 .cheat-dialog h2 { margin: 0; font-size: 1.12rem; }
