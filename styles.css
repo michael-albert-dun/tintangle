@@ -129,8 +129,8 @@ h1 { position: relative; display: inline-block; margin: 0; font-size: clamp(2rem
 .status { display: grid; min-height: 42px; margin: 13px auto 0; width: min(100%, 400px); place-items: center; color: var(--muted); }
 #move-count { margin: 0; font-size: .9rem; font-weight: 560; }
 
-.completion-message { min-height: 0; text-align: center; color: #31764a; font-size: .94rem; font-weight: 650; opacity: 0; transition: opacity 180ms ease; }
-.completion-message.is-complete { min-height: 25px; opacity: 1; }
+.completion-message { min-height: 25px; text-align: center; color: #31764a; font-size: .94rem; font-weight: 650; opacity: 0; transition: opacity 180ms ease; }
+.completion-message.is-complete { opacity: 1; }
 .toolbar { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
 .toolbar button { min-height: 43px; border: 1px solid var(--tile-border); border-radius: 13px; background: var(--button); color: var(--ink); cursor: pointer; font-weight: 600; box-shadow: 0 7px 16px rgba(45,62,76,.06); }
 .toolbar button:hover { background: var(--button-hover); }
