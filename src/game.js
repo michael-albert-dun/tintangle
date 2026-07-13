@@ -10,7 +10,6 @@ let tetrominoTilings = [];
 const state = { board: [], initialBoard: [], moves: 0, complete: false };
 const elements = {
   board: document.querySelector("#board"),
-  connectionStatus: document.querySelector("#connection-status"),
   moveCount: document.querySelector("#move-count"),
   completion: document.querySelector("#completion-message"),
   restart: document.querySelector("#restart-button"),
@@ -128,13 +127,6 @@ function render() {
     for (let column = 0; column < SIZE - 1; column += 1) children.push(makeRotationButton(row, column));
   }
   elements.board.replaceChildren(...children);
-  elements.connectionStatus.replaceChildren(...PALETTE.map((colour) => {
-    const indicator = document.createElement("span");
-    indicator.className = `colour-status${connected.has(colour.key) ? " is-connected" : ""}`;
-    indicator.style.setProperty("--colour", colour.value);
-    indicator.textContent = colour.label;
-    return indicator;
-  }));
   elements.moveCount.textContent = `${state.moves} ${state.moves === 1 ? "move" : "moves"}`;
   elements.completion.textContent = state.complete ? `Connected in ${state.moves} ${state.moves === 1 ? "move" : "moves"}.` : "";
   elements.completion.classList.toggle("is-complete", state.complete);

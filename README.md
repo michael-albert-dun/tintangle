@@ -23,8 +23,8 @@ Colorfold is a compact connection puzzle for early design exploration.
 - The tiles form a close 4×4 background grid. Rotation controls are overlaid at
   the nine internal junctions, keeping the actions clear without opening large
   gutters between tiles.
-- Coloured status dots show which colour groups are presently connected. A
-  completion notice and move count provide minimal feedback without imposing an
+- A darker border identifies each connected colour group. A completion notice
+  and centered move count provide minimal feedback without imposing an
   optimality target yet.
 
 ## Useful next experiments
@@ -35,7 +35,7 @@ Colorfold is a compact connection puzzle for early design exploration.
   breadth-first solver to measure shortest solution lengths and duplicate states.
 - Try asymmetric targets, non-uniform colour populations, or boards larger than
   4×4.
-- Test whether the connection indicators help learning or give away too much.
+- Test whether the completed-group borders help learning or give away too much.
 
 ## Local preview
 

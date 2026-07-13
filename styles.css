@@ -117,12 +117,7 @@ h1 { position: relative; display: inline-block; margin: 0; font-size: clamp(2rem
 .rotation-button:hover { background: var(--button-hover); color: var(--ink); transform: translate(-50%, -50%) scale(1.12); }
 .rotation-button svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; }
 
-.status { display: flex; align-items: center; justify-content: space-between; min-height: 42px; margin: 13px auto 0; width: min(100%, 400px); color: var(--muted); }
-.connection-status { display: flex; gap: 8px; }
-.colour-status { display: inline-flex; align-items: center; gap: 5px; font-size: .75rem; font-weight: 650; }
-.colour-status::before { width: 11px; height: 11px; border: 2px solid rgba(41,52,61,.24); border-radius: 50%; background: var(--colour); content: ""; }
-.colour-status.is-connected { color: var(--ink); }
-.colour-status.is-connected::after { color: #31764a; content: "✓"; font-size: .83rem; }
+.status { display: grid; min-height: 42px; margin: 13px auto 0; width: min(100%, 400px); place-items: center; color: var(--muted); }
 #move-count { margin: 0; font-size: .9rem; font-weight: 560; }
 
 .completion-message { min-height: 0; text-align: center; color: #31764a; font-size: .94rem; font-weight: 650; opacity: 0; transition: opacity 180ms ease; }
@@ -142,5 +137,4 @@ button:focus-visible, .title-hint:focus-visible { outline: 3px solid var(--focus
   .tile { border-radius: 15px; }
   .rotation-button { width: 25px; height: 25px; }
   .rotation-button svg { width: 16px; height: 16px; }
-  .connection-status { gap: 5px; }
 }
