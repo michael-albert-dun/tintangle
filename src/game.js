@@ -9,7 +9,7 @@ const SCRAMBLE_MOVE_COUNT = 7;
 const CORNER_COUNT = (SIZE - 1) ** 2;
 let tetrominoTilings = [];
 
-const state = { board: [], initialBoard: [], scramble: [], solution: [], moves: 0, complete: false, cheating: false };
+const state = { board: [], initialBoard: [], scramble: [], solution: [], moves: 0, complete: false, cheating: false, showNumbers: loadNumberPreference() };
 let cheatTimer = null;
 const elements = {
   board: document.querySelector("#board"),
@@ -18,6 +18,7 @@ const elements = {
   restart: document.querySelector("#restart-button"),
   newPuzzle: document.querySelector("#new-button"),
   cheat: document.querySelector("#cheat-button"),
+  numberButton: document.querySelector("#number-button"),
   infoButton: document.querySelector("#info-button"),
   infoPanel: document.querySelector("#info-panel")
 };
@@ -25,6 +26,7 @@ const elements = {
 elements.restart.addEventListener("click", restartPuzzle);
 elements.newPuzzle.addEventListener("click", newPuzzle);
 elements.cheat.addEventListener("click", playSolution);
+elements.numberButton.addEventListener("click", toggleNumbers);
 elements.infoButton.addEventListener("click", toggleInfo);
 document.addEventListener("pointerdown", closeInfoOutside, true);
 document.addEventListener("keydown", handleKeyDown);
@@ -212,13 +214,15 @@ function render() {
   const connected = connectedColours(state.board);
   const children = state.board.map((colour, index) => {
     const tile = document.createElement("div");
+    const number = PALETTE.indexOf(colour) + 1;
     tile.className = `tile${connected.has(colour.key) ? " is-connected" : ""}`;
     tile.style.setProperty("--colour", colour.value);
     tile.style.gridColumn = String(index % SIZE + 1);
     tile.style.gridRow = String(Math.floor(index / SIZE) + 1);
     tile.dataset.index = String(index);
     tile.setAttribute("role", "img");
-    tile.setAttribute("aria-label", `${colour.label}, row ${Math.floor(index / SIZE) + 1}, column ${index % SIZE + 1}${connected.has(colour.key) ? ", connected" : ""}`);
+    tile.setAttribute("aria-label", `${colour.label}, number ${number}, row ${Math.floor(index / SIZE) + 1}, column ${index % SIZE + 1}${connected.has(colour.key) ? ", connected" : ""}`);
+    if (state.showNumbers) tile.textContent = String(number);
     return tile;
   });
   for (let row = 0; row < SIZE - 1; row += 1) {
@@ -227,8 +231,29 @@ function render() {
   elements.board.replaceChildren(...children);
   elements.moveCount.textContent = `${state.moves} ${state.moves === 1 ? "move" : "moves"}`;
   elements.cheat.disabled = !state.solution.length || state.cheating;
+  elements.numberButton.setAttribute("aria-pressed", String(state.showNumbers));
+  elements.numberButton.setAttribute("aria-label", `${state.showNumbers ? "Hide" : "Show"} colour numbers`);
+  elements.numberButton.classList.toggle("is-active", state.showNumbers);
   elements.completion.textContent = state.complete ? `Connected in ${state.moves} ${state.moves === 1 ? "move" : "moves"}.` : "";
   elements.completion.classList.toggle("is-complete", state.complete);
+}
+
+function toggleNumbers() {
+  state.showNumbers = !state.showNumbers;
+  try {
+    window.localStorage.setItem("tintangle-show-numbers", String(state.showNumbers));
+  } catch (error) {
+    console.warn("Could not save number-display preference", error);
+  }
+  render();
+}
+
+function loadNumberPreference() {
+  try {
+    return window.localStorage.getItem("tintangle-show-numbers") === "true";
+  } catch (error) {
+    return false;
+  }
 }
 
 function makeRotationButton(row, column) {

@@ -26,6 +26,8 @@ Tintangle is a compact connection puzzle for early design exploration.
 - A darker border identifies each connected colour group. A completion notice
   and centered move count provide minimal feedback without imposing an
   optimality target yet.
+- An upper-left 1–4 toggle adds persistent numeric colour labels for players
+  who want an additional non-colour distinction.
 
 ## Useful next experiments
 
