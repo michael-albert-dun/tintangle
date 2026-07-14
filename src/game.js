@@ -6,6 +6,7 @@ const PALETTE = [
   { key: "red", label: "red", value: "#d98778" }
 ];
 const SCRAMBLE_MOVE_COUNT = 7;
+const MINIMUM_SCRAMBLE_DISTANCE = 4;
 const CORNER_COUNT = (SIZE - 1) ** 2;
 let tetrominoTilings = [];
 
@@ -53,20 +54,22 @@ async function loadTilings() {
 function newPuzzle({ recordUrl = true, cheatAvailable = true } = {}) {
   if (!tetrominoTilings.length) return;
   stopCheat();
-  const solved = makeSolvedBoard();
-  let board = solved.slice();
-  const scramble = [];
+  let solved, board, scramble;
+  do {
+    solved = makeSolvedBoard();
+    board = solved.slice();
+    scramble = [];
 
-  // Scramble anticlockwise so every scramble move is undone by the player's
-  // clockwise action. Repeated use of a junction is deliberately allowed.
-  for (let turn = 0; turn < SCRAMBLE_MOVE_COUNT; turn += 1) {
-    const row = Math.floor(Math.random() * (SIZE - 1));
-    const column = Math.floor(Math.random() * (SIZE - 1));
-    board = rotateAnticlockwise(board, row, column);
-    scramble.push({ row, column });
-  }
+    // Scramble anticlockwise so every scramble move is undone by the player's
+    // clockwise action. Repeated use of a junction is deliberately allowed.
+    for (let turn = 0; turn < SCRAMBLE_MOVE_COUNT; turn += 1) {
+      const row = Math.floor(Math.random() * (SIZE - 1));
+      const column = Math.floor(Math.random() * (SIZE - 1));
+      board = rotateAnticlockwise(board, row, column);
+      scramble.push({ row, column });
+    }
+  } while (isComplete(board) || isReachableWithin(solved, board, MINIMUM_SCRAMBLE_DISTANCE - 1));
 
-  if (isComplete(board)) return newPuzzle();
   startPuzzle(board, scramble, { recordUrl, cheatAvailable });
 }
 
@@ -126,6 +129,26 @@ function rotateAnticlockwise(board, row, column) {
   next[bottomRight] = board[bottomLeft];
   next[bottomLeft] = board[topLeft];
   return next;
+}
+
+function isReachableWithin(start, target, maxMoves) {
+  let frontier = [start];
+  for (let depth = 0; depth <= maxMoves; depth += 1) {
+    if (frontier.some((board) => boardsMatch(board, target))) return true;
+    if (depth === maxMoves) break;
+    const next = [];
+    for (const board of frontier) {
+      for (let row = 0; row < SIZE - 1; row += 1) {
+        for (let column = 0; column < SIZE - 1; column += 1) next.push(rotateAnticlockwise(board, row, column));
+      }
+    }
+    frontier = next;
+  }
+  return false;
+}
+
+function boardsMatch(first, second) {
+  return first.every((colour, index) => colour === second[index]);
 }
 
 function restartPuzzle() {
