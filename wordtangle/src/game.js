@@ -43,8 +43,9 @@ async function loadResources() {
     ]);
     if (!tilingResponse.ok || !commonWordsResponse.ok || !allowedWordsResponse.ok) throw new Error("Could not load puzzle data");
     tetrominoTilings = (await tilingResponse.text()).trim().split(/\s+/).filter((tiling) => tiling.length === SIZE * SIZE);
-    generatorWords = (await commonWordsResponse.text()).trim().split(/\s+/).filter((word) => /^[a-z]{4}$/.test(word));
+    const commonWords = (await commonWordsResponse.text()).trim().split(/\s+/).filter((word) => /^[a-z]{4}$/.test(word));
     validWords = new Set((await allowedWordsResponse.text()).trim().split(/\s+/).filter((word) => /^[a-z]{4}$/.test(word)));
+    generatorWords = commonWords.filter((word) => validWords.has(word));
     if (!tetrominoTilings.length || !generatorWords.length || !validWords.size) throw new Error("No usable puzzle data");
     newPuzzle();
   } catch (error) {
