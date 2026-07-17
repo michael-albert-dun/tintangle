@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Grid Rotation Group Visualiser</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f6f5f2;
+    --panel: #ffffff;
+    --ink: #1b1b1b;
+    --muted: #6b6b6b;
+    --line: #d8d5cf;
+    --cell: #ffffff;
+    --cell-line: #b9b6ae;
+    --accent: #b5482a;
+    --accent-ink: #ffffff;
+    --btn: #2f2f2f;
+    --btn-ink: #ffffff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #171614;
+      --panel: #211f1c;
+      --ink: #ece9e3;
+      --muted: #9c9890;
+      --line: #3a3733;
+      --cell: #26241f;
+      --cell-line: #4a463f;
+      --accent: #e0703f;
+      --accent-ink: #1b1b1b;
+      --btn: #3a3733;
+      --btn-ink: #ece9e3;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 2rem 1.25rem 4rem;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  h1 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: 0.01em;
+  }
+  .sub {
+    color: var(--muted);
+    font-size: 0.85rem;
+    max-width: 34rem;
+    text-align: center;
+    margin-top: -1rem;
+    line-height: 1.5;
+  }
+  .layout {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .controls {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  button {
+    font: inherit;
+    font-size: 0.8rem;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    color: var(--ink);
+    padding: 0.4rem 0.75rem;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  button.active {
+    background: var(--btn);
+    color: var(--btn-ink);
+    border-color: var(--btn);
+  }
+  #board-wrap {
+    position: relative;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 2.25rem;
+  }
+  #grid {
+    display: grid;
+    position: relative;
+  }
+  .cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--cell);
+    border: 1px solid var(--cell-line);
+    border-radius: 6px;
+    font-size: 1.3rem;
+    font-variant-numeric: tabular-nums;
+    user-select: none;
+    cursor: pointer;
+    transition: background 0.12s ease, transform 0.12s ease;
+  }
+  .cell:hover { border-color: var(--accent); }
+  .cell.marked {
+    background: var(--accent);
+    color: var(--accent-ink);
+    border-color: var(--accent);
+  }
+  .rotor {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    margin-left: -15px;
+    margin-top: -15px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    cursor: pointer;
+    z-index: 2;
+  }
+  .rotor:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .rotor .label {
+    position: absolute;
+    top: -1.15rem;
+    font-size: 0.65rem;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  aside {
+    width: 17rem;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 1rem 1.1rem;
+    font-size: 0.82rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+  aside h2 {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin: 0 0 0.4rem;
+    font-weight: 600;
+  }
+  #word {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    word-break: break-all;
+    line-height: 1.5;
+    min-height: 1.4em;
+  }
+  #perm {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    line-height: 1.6;
+    min-height: 1.4em;
+  }
+  #marks-list {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    min-height: 1.4em;
+  }
+  .hint { color: var(--muted); font-size: 0.75rem; line-height: 1.45; }
+</style>
+</head>
+<body>
+
+<h1>Grid Rotation Group Visualiser</h1>
+<div class="sub">
+  Click a cell to mark/unmark it. Click a rotor (⟳) to rotate that 2×2 block clockwise;
+  shift-click for counter-clockwise. Marks follow the numbered piece as it moves.
+</div>
+
+<div class="controls">
+  <button id="size-3x3">3 × 3</button>
+  <button id="size-2x4">2 × 4</button>
+  <button id="undo">Undo</button>
+  <button id="reset">Reset</button>
+  <button id="clear-marks">Clear marks</button>
+</div>
+
+<div class="layout">
+  <div id="board-wrap">
+    <div id="grid"></div>
+  </div>
+
+  <aside>
+    <div>
+      <h2>Marked cells (current positions)</h2>
+      <div id="marks-list">—</div>
+    </div>
+    <div>
+      <h2>Generator word applied</h2>
+      <div id="word">—</div>
+    </div>
+    <div>
+      <h2>Permutation of original labels</h2>
+      <div id="perm">identity</div>
+    </div>
+    <div class="hint">
+      Generators are true clockwise rotations, matching
+      <code>initial_3cycle.tex</code>: top-left → top-right → bottom-right →
+      bottom-left. 3×3 blocks are named a, b, c, d (row-major); the 2×4 strip's
+      blocks are g1, g2, g3.
+    </div>
+  </aside>
+</div>
+
+<script>
+(function () {
+  const CELL = 70, GAP = 6;
+  let rows, cols, size;
+  let labelPos;   // labelPos[label-1] = current position (0-indexed) of piece originally labelled `label`
+  let history = [];
+  let marks = new Set(); // set of labels currently marked
+
+  const gridEl = document.getElementById('grid');
+  const wordEl = document.getElementById('word');
+  const permEl = document.getElementById('perm');
+  const marksEl = document.getElementById('marks-list');
+
+  function boardAtPosition() {
+    const b = new Array(size);
+    for (let label = 1; label <= size; label++) b[labelPos[label - 1]] = label;
+    return b;
+  }
+
+  function genName(r, c) {
+    if (rows === 3 && cols === 3) {
+      return ['a', 'b', 'c', 'd'][r * 2 + c];
+    }
+    if (rows === 2) {
+      return 'g' + (c + 1);
+    }
+    return 'R' + r + 'C' + c;
+  }
+
+  function setup(newRows, newCols) {
+    rows = newRows; cols = newCols; size = rows * cols;
+    labelPos = Array.from({ length: size }, (_, i) => i);
+    history = [];
+    marks.clear();
+    document.getElementById('size-3x3').classList.toggle('active', rows === 3 && cols === 3);
+    document.getElementById('size-2x4').classList.toggle('active', rows === 2 && cols === 4);
+    render();
+  }
+
+  function render() {
+    const board = boardAtPosition();
+    const wrapW = cols * CELL + (cols - 1) * GAP;
+    const wrapH = rows * CELL + (rows - 1) * GAP;
+    gridEl.style.width = wrapW + 'px';
+    gridEl.style.height = wrapH + 'px';
+    gridEl.style.gridTemplateColumns = `repeat(${cols}, ${CELL}px)`;
+    gridEl.style.gridTemplateRows = `repeat(${rows}, ${CELL}px)`;
+    gridEl.style.gap = GAP + 'px';
+    gridEl.innerHTML = '';
+
+    for (let pos = 0; pos < size; pos++) {
+      const label = board[pos];
+      const div = document.createElement('div');
+      div.className = 'cell' + (marks.has(label) ? ' marked' : '');
+      div.textContent = label;
+      div.addEventListener('click', () => {
+        if (marks.has(label)) marks.delete(label); else marks.add(label);
+        render();
+      });
+      gridEl.appendChild(div);
+    }
+
+    const cellCenter = (i) => i * (CELL + GAP) + CELL / 2;
+
+    for (let r = 0; r < rows - 1; r++) {
+      for (let c = 0; c < cols - 1; c++) {
+        const cx = (cellCenter(c) + cellCenter(c + 1)) / 2;
+        const cy = (cellCenter(r) + cellCenter(r + 1)) / 2;
+        const rotor = document.createElement('div');
+        rotor.className = 'rotor';
+        rotor.style.left = cx + 'px';
+        rotor.style.top = cy + 'px';
+        rotor.innerHTML = '&#10227;<span class="label">' + genName(r, c) + '</span>';
+        rotor.title = genName(r, c) + ' (shift-click for inverse)';
+        rotor.addEventListener('click', (e) => rotate(r, c, !e.shiftKey));
+        gridEl.appendChild(rotor);
+      }
+    }
+
+    renderInfo();
+  }
+
+  function rotate(r, c, clockwise) {
+    const tl = r * cols + c;
+    const tr = tl + 1;
+    const bl = tl + cols;
+    const br = bl + 1;
+    const board = boardAtPosition();
+    const at = (pos) => board[pos];
+
+    if (clockwise) {
+      labelPos[at(tl) - 1] = tr;
+      labelPos[at(tr) - 1] = br;
+      labelPos[at(br) - 1] = bl;
+      labelPos[at(bl) - 1] = tl;
+    } else {
+      labelPos[at(tr) - 1] = tl;
+      labelPos[at(br) - 1] = tr;
+      labelPos[at(bl) - 1] = br;
+      labelPos[at(tl) - 1] = bl;
+    }
+
+    const name = genName(r, c) + (clockwise ? '' : '⁻¹');
+    history.push(name);
+    render();
+  }
+
+  function undo() {
+    if (!history.length) return;
+    const last = history[history.length - 1];
+    const inverse = last.endsWith('⁻¹');
+    const base = inverse ? last.slice(0, -2) : last;
+    const [r, c] = genCoords(base);
+    // apply the opposite rotation, then drop the last history entry
+    const tl = r * cols + c, tr = tl + 1, bl = tl + cols, br = bl + 1;
+    const board = boardAtPosition();
+    const at = (pos) => board[pos];
+    if (inverse) {
+      // last move was ccw; undo with cw
+      labelPos[at(tl) - 1] = tr;
+      labelPos[at(tr) - 1] = br;
+      labelPos[at(br) - 1] = bl;
+      labelPos[at(bl) - 1] = tl;
+    } else {
+      labelPos[at(tr) - 1] = tl;
+      labelPos[at(br) - 1] = tr;
+      labelPos[at(bl) - 1] = br;
+      labelPos[at(tl) - 1] = bl;
+    }
+    history.pop();
+    render();
+  }
+
+  function genCoords(name) {
+    if (rows === 3 && cols === 3) {
+      const i = ['a', 'b', 'c', 'd'].indexOf(name);
+      return [Math.floor(i / 2), i % 2];
+    }
+    if (rows === 2) {
+      return [0, parseInt(name.slice(1), 10) - 1];
+    }
+    const m = name.match(/^R(\d+)C(\d+)$/);
+    return [parseInt(m[1], 10), parseInt(m[2], 10)];
+  }
+
+  function cycleNotation() {
+    const seen = new Array(size + 1).fill(false);
+    const cycles = [];
+    for (let start = 1; start <= size; start++) {
+      if (seen[start]) continue;
+      seen[start] = true;
+      let cur = labelPos[start - 1] + 1;
+      if (cur === start) continue;
+      const cyc = [start];
+      while (cur !== start) {
+        seen[cur] = true;
+        cyc.push(cur);
+        cur = labelPos[cur - 1] + 1;
+      }
+      cycles.push(cyc);
+    }
+    if (!cycles.length) return 'identity';
+    return cycles.map(c => '(' + c.join(' ') + ')').join('');
+  }
+
+  function renderInfo() {
+    wordEl.textContent = history.length ? history.join(' ') : '—';
+    permEl.textContent = cycleNotation();
+    if (!marks.size) {
+      marksEl.textContent = '—';
+    } else {
+      const items = [...marks].sort((a, b) => a - b)
+        .map(label => `${label} → pos ${labelPos[label - 1] + 1}`);
+      marksEl.textContent = items.join(', ');
+    }
+  }
+
+  document.getElementById('size-3x3').addEventListener('click', () => setup(3, 3));
+  document.getElementById('size-2x4').addEventListener('click', () => setup(2, 4));
+  document.getElementById('undo').addEventListener('click', undo);
+  document.getElementById('reset').addEventListener('click', () => setup(rows, cols));
+  document.getElementById('clear-marks').addEventListener('click', () => { marks.clear(); render(); });
+
+  setup(3, 3);
+})();
+</script>
+
+</body>
+</html>
