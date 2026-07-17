@@ -57,3 +57,9 @@ python3 -m http.server 8000
 ```
 
 Then open `http://localhost:8000/tintangle/`.
+
+## License
+
+Source code is licensed under the [MIT License](LICENSE). Non-code creative
+content (puzzle designs, write-ups, LaTeX documents) is licensed under
+[CC BY 4.0](LICENSE-CONTENT).
