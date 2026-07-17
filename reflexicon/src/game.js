@@ -4,10 +4,10 @@ const MAXIMUM_FOLDS = 9;
 const MECHANISM_HINT_KEY = "reflexicon-mechanism-hint-seen";
 const MECHANISM_HINT_DURATION = 6200;
 const PALETTE = [
-  { key: "blue", label: "blue", value: "#58a9d5" },
-  { key: "orange", label: "orange", value: "#efbd62" },
-  { key: "green", label: "green", value: "#67bda1" },
-  { key: "red", label: "red", value: "#d98778" }
+  { key: "blue", label: "sky blue", value: "#56b4e9" },
+  { key: "orange", label: "orange", value: "#e69f00" },
+  { key: "green", label: "bluish green", value: "#009e73" },
+  { key: "purple", label: "reddish purple", value: "#cc79a7" }
 ];
 
 let generatorWords = [];
