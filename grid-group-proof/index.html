@@ -190,7 +190,7 @@
             out to be a magic number: a lot of interesting structure in problems like this first shows up exactly
             when you move from two objects to three — with two things you can only swap them or leave them alone,
             but three is where real cycles, and real complexity, begin. It's also a smaller board to reason about,
-            and hopefully when we're done we might understand enough to handle the 4×4 case as well<span
+            and when we're done we might understand enough to handle the 4×4 case as well<span
               class="footnote" tabindex="0" data-hint="That is certainly true.">*</span>.</p>
 
           <p>Here's a 3×3 grid of blocks:</p>
@@ -231,13 +231,13 @@
             </div>
           </figure>
 
-          <p>We actually want to talk about <em>all</em> possible arrangements and <em>all</em> possible solutions,
+          <p>We want to talk about <em>all</em> possible arrangements and <em>all</em> possible solutions,
             so it makes sense to forget about the contents of the blocks and focus on what the rotations
             do.</p>
 
-          <p>A rotation simply changes the <em>positions</em> of some of the blocks, and a more complex sequence of
+          <p>A rotation changes the <em>positions</em> of some of the blocks, and a more complex sequence of
             rotations does the same thing. Keeping track of positions is likely to be helpful. We can represent
-            the starting position simply as</p>
+            the starting position as</p>
 
           <figure class="board-figure">
             <div class="mini-board" style="--board-size:3"
@@ -359,7 +359,7 @@
             </tbody>
           </table>
 
-          <p>We can see what happens when we apply them one after the other.</p>
+          <p>What happens when we apply them one after the other?</p>
 
           <figure class="board-figure">
             <div class="mini-board op-board" style="--board-size:3"
@@ -405,9 +405,9 @@
             </div>
           </figure>
 
-          <p>Try out the sequence <span class="notation">A D a d</span>. It does something interesting — it
-            leaves the first and third columns alone, and cycles the middle column down one space (with the 8
-            floating back to the top). This is called a 3-cycle. Sequences of moves like this,
+          <p>Try out the sequence <span class="notation">A D a d</span>. It does something interesting — nothing
+            happens to the first and third columns, and the middle column cycles down one space, with the 8
+            floating back to the top. This is called a three-cycle. Sequences of moves like this,
             that make different and structured changes in a puzzle, are often a key to its solution. If you've
             ever done Rubik's cube at all seriously you know this already!</p>
         </div>
@@ -428,7 +428,7 @@
             you're interested in puzzles and how they work. Doing the kind of puzzles we're talking about
             here, as well as many other popular ones such as
             <a href="https://en.wikipedia.org/wiki/Sudoku">sudoku</a>,
-            <a href="https://en.wikipedia.org/wiki/KenKen">ken ken</a>, and
+            <a href="https://en.wikipedia.org/wiki/KenKen">KenKen</a>, and
             <a href="https://en.wikipedia.org/wiki/Kakuro">many</a>
             <a href="https://en.wikipedia.org/wiki/Nonogram">other</a>
             <a href="https://en.wikipedia.org/wiki/Slitherlink">logic</a>
@@ -439,12 +439,14 @@
 
           <h3>Secret 3</h3>
 
-          <p>Mathematicians are lazy. Hey, let's not have any mathematician-shaming. Let's say mathematicians
-            prefer to avoid unnecessary work. There's a big spectrum of ways in which we do that. One is to go
-            find work that other mathematicians have done already and quote that<span class="footnote" tabindex="0"
-              data-hint="We have seen that the group of permutations of the positions we can carry out contains a 3-cycle. It is easy to see that it is two-transitive, hence primitive, so by Jordan's theorem (1873) it is A₉ or S₉, but it contains odd permutations, so it's the latter.">*</span>.
+          <p>Mathematicians are lazy. That might read as mathematician-shaming, and we don't want to do that.
+            Let us say instead that
+            mathematicians prefer to avoid unnecessary work. There's a big spectrum of ways in which we do that.
+            One is to go find work that other mathematicians have done already and quote that<span class="footnote"
+              tabindex="0"
+              data-hint="We have seen that the group of permutations of the positions we can carry out contains a three-cycle. It is easy to see that it is two-transitive, hence primitive, so by Jordan's theorem (1873) it is A₉ or S₉, but it contains odd permutations, so it's the latter.">*</span>.
             Another is to find some little observation and then use it in a bunch of different contexts. I'm
-            rather partial to that kind of argument, so that's where we're going from here.</p>
+            rather partial to that kind of argument.</p>
         </div>
       </details>
 
@@ -454,7 +456,7 @@
           <p>Imagine picking up the puzzle and giving it a quarter-turn clockwise before you start, and then
             applying the same moves <span class="notation">A D a d</span> as before, using the same corner
             locations as always. If you don't account for that initial turn, what you'll see is a messier tangle —
-            the turn's own effect gets mixed in with the three-cycle. Rotate (or flip) the board below, apply
+            the turn's own effect gets mixed in with the three-cycle. Rotate the board below, apply
             <span class="notation">A D a d</span>, and then use "Restore orientation" to peel the initial turn back
             off: you'll find it's the three elements 4, 5 and 6 that cycled, rather than 2, 5 and 8. Flipping the
             board over instead (did I tell you it was two-sided?) leaves the positions 2, 5 and 8 unchanged as a
@@ -523,6 +525,11 @@
             </div>
           </figure>
 
+          <p>Try out some other sequences of operations, and then do the same ones after a change of orientation,
+            finishing by restoring the original orientation. The cycle structure should always be the same as the
+            original, but the actual positions affected may change<span class="footnote" tabindex="0"
+              data-hint="To get technical: we've shown that the symmetry group of the square normalizes the group of permutations that we can achieve.">*</span>.</p>
+
           <p>This is the basis for a general rule: whatever symmetric version of a move we want, we can do that
             too.</p>
         </div>
@@ -533,11 +540,13 @@
         <div class="section-body">
           <p>An interesting thing about a three-cycle <span class="notation">(x y z)</span> is that if you apply
             it twice you get <span class="notation">(x z y)</span>, and if you apply it three times of course you
-            get back to "nothing happens". But what this means is that if we can work out somehow to produce a
+            get back to "nothing happens". This means that if we can produce a
             three-cycle that moves three specific positions, then we also have <em>every</em> three-cycle that
-            moves just those three positions (since x has to go to y or z, and that determines the third one).</p>
+            moves just those three positions (since <span class="notation">x</span> has to go to
+            <span class="notation">y</span> or <span class="notation">z</span>, and that determines the third
+            one).</p>
 
-          <p>So far we only have the three-cycles that move the middle column. Can we get more? Yes — this is
+          <p>So far we only have the three-cycles that move the middle row or column. Can we get more? Yes — this is
             a standard trick. Imagine we do some moves, then we do the <span class="notation">A D a d</span>
             sequence (cycling the middle column) and then we undo the moves we originally did (do them again in
             reverse order, swapping each of <span class="notation">A</span>/<span class="notation">a</span>,
@@ -650,7 +659,7 @@
           </div>
 
           <p>Can we catch them all? Starting from the central column, apply some operations and see how many of
-            the 84 sets of three you can find (when you find a type, it counts as finiding all the sets of that type).</p>
+            the 84 sets of three you can find (when you find a type, it counts as finding all the sets of that type).</p>
 
           <figure class="board-figure">
             <div class="mini-board op-board op-board-discs" style="--board-size:3"
@@ -739,8 +748,10 @@
         <div class="section-body">
           <p>Triples are nice, but it turns out that we can't achieve <em>all</em> permutations using just
             three-cycles (don't ask). But two-cycles (usually called <em>transpositions</em>), that just exchange
-            two elements, are a different story. Imagine we could use all the transpositions. That's a pretty easy
-            puzzle to solve — rearrange the grid below so that 1–9 are in the correct order.</p>
+            two elements, are a different story. Imagine we could use all the transpositions.</p>
+
+          <p>In the puzzle below you can exchange any two tiles by clicking them. Try to rearrange the grid so
+            that 1–9 are in the correct order.</p>
 
           <figure class="board-figure">
             <div class="mini-board swap-board" style="--board-size:3"
@@ -759,24 +770,44 @@
             <p class="swap-complete" aria-live="polite"></p>
           </figure>
 
-          <p>The reason this is easy is that there are any number of good strategies: switch 1 with whatever is in
+          <p>There are any number of good strategies: for instance, switch 1 with whatever is in
             its place, then switch 2 with whatever is in its place, …</p>
 
-          <p>We'd like to move just two elements, but the basic operations we have (the corner rotations) move
+          <p>In the original puzzle, we'd like to move just two elements, but the basic operations we have (the
+            corner rotations) move
             four, and we've concentrated on getting others that move three. It's time, I'm afraid, for a bit of
             abstract thinking — and first I want to think about the other direction: suppose that I knew how to
             move triples and pairs, how could I move four elements using just one pair? Imagine we have four
-            elements w, x, y, and z. Let's give ourselves the pair <span class="notation">(y z)</span>, any triples
-            we like, and try to get <span class="notation">(w x y z)</span>. Can we find some triple then
-            <span class="notation">(y z)</span> to produce <span class="notation">(w x y z)</span>? Our triple
-            should send w to x (which will be left alone by <span class="notation">(y z)</span>). It should send x
-            to z so that when we then apply <span class="notation">(y z)</span> it will go to y where we want it.
-            Look at <span class="notation">(w x z)</span> <span class="notation">(y z)</span>. We've set it up so
-            that this sends w to x and x to y. Where does it send y — the first part leaves it alone so it goes to
-            z. And where does it send z — to w in the first part and then it's left alone, so we get exactly
-            <span class="notation">(w x y z)</span>.</p>
+            elements <span class="notation">w</span>, <span class="notation">x</span>, <span class="notation">y</span>,
+            and <span class="notation">z</span>. Let's give ourselves the pair <span class="notation">(y z)</span>,
+            any triples we like, and try to get <span class="notation">(w x y z)</span>. Can we apply some
+            three-cycle then <span class="notation">(y z)</span> to produce <span class="notation">(w x y z)</span>?</p>
 
-          <p class="equation"><span class="notation">(w x z)</span> <span class="notation">(y z)</span> =
+          <ul class="step-list">
+            <li>Our three-cycle should send <span class="notation">w</span> to <span class="notation">x</span>,
+              which will be left alone by <span class="notation">(y z)</span>.</li>
+            <li>It should send <span class="notation">x</span> to <span class="notation">z</span> so that when we
+              apply <span class="notation">(y z)</span> it will go to <span class="notation">y</span> where we
+              want it.</li>
+            <li>So it looks like it should be <span class="notation">(w x z)</span>.</li>
+          </ul>
+
+          <p>Now let's see what <span class="notation">(w x z)</span> <span class="notation">(y z)</span> actually
+            does:</p>
+
+          <ul class="step-list">
+            <li><span class="notation">w</span> goes to <span class="notation">x</span>: the first part sends it
+              there, and the second part leaves <span class="notation">x</span> alone.</li>
+            <li><span class="notation">x</span> goes to <span class="notation">y</span>: the first part sends it to
+              <span class="notation">z</span>, and the second part then sends <span class="notation">z</span> to
+              <span class="notation">y</span>.</li>
+            <li><span class="notation">y</span> goes to <span class="notation">z</span>: the first part leaves it
+              alone, and the second part sends it to <span class="notation">z</span>.</li>
+            <li><span class="notation">z</span> goes to <span class="notation">w</span>: the first part sends it
+              there, and the second part leaves <span class="notation">w</span> alone.</li>
+          </ul>
+
+          <p class="equation">So: <span class="notation">(w x z)</span> <span class="notation">(y z)</span> =
             <span class="notation">(w x y z)</span></p>
 
           <p>If we undo the <span class="notation">(w x z)</span> on the left with
@@ -793,9 +824,11 @@
               <span class="notation">(w x y z)</span></span>
           </div>
 
-          <p>and now we can plug in some numbers we know work (like <span class="notation">(w x y z)</span> =
-            <span class="notation">(1 2 5 4)</span>) to produce the
-            <span class="notation">(5 4)</span> transposition. Or, we could just search for three-cycles that
+          <p>and now we can plug in some numbers we know work, like <span class="notation">(w x y z)</span> =
+            <span class="notation">(1 2 5 4)</span>, to produce the
+            <span class="notation">(5 4)</span> transposition.</p>
+
+          <p>Alternatively, we could just search for three-cycles that
             combine with <span class="notation">A</span> to produce a transposition. Pick three tiles below, in
             order, to build a triple of your choosing — it's applied the moment you've clicked a third. Then apply
             <span class="notation">A</span> on top and see what you get.</p>
@@ -814,7 +847,7 @@
               <button type="button" class="mini-tile triple-a-tile" data-index="8" role="img" style="--colour:#dbe3ea">9</button>
             </div>
 
-            <div class="op-panels">
+            <div class="op-panels triple-a-controls">
               <button type="button" class="op-preset-button triple-a-apply" disabled>Apply A</button>
               <button type="button" class="mini-reset-button triple-a-reset">Reset</button>
             </div>
@@ -826,8 +859,8 @@
             <p class="swap-complete triple-a-win" aria-live="polite"></p>
           </figure>
 
-          <p>Now we can play the same game with pairs as we played with triples before — can you find a
-            representative of every type of pair?</p>
+          <p>Once we have one pair, we can play the same game with pairs as we played with triples before — can
+            you find a representative of every type of pair?</p>
 
           <figure class="board-figure">
             <div class="mini-board op-board op-board-discs" style="--board-size:3"
@@ -906,15 +939,15 @@
       <details class="section">
         <summary>The speedrun (a digression)</summary>
         <div class="section-body">
-          <p>Here's a fun parallel. Every one of the 43 quintillion configurations of a Rubik's Cube can be solved
+          <p>Every one of the 43 quintillion configurations of a Rubik's Cube can be solved
             in at most 20 moves — a fact known, only half-jokingly, as God's Number. Nobody actually knew this for
             certain until 2010, when Tomas Rokicki and colleagues finally nailed it down using about 35 CPU-years
             of computing time that Google donated for the purpose.</p>
 
-          <p>What we've shown here is a much easier question: that every rearrangement is reachable at all, full
-            stop, with no move count attached. "Is it possible?" and "what's the fewest moves it ever takes?" are
-            genuinely different problems, and the second one is usually much harder. Finding this puzzle's God
-            Number would not be too hard — there are only 9! = 362,880 configurations to check, but there might
+          <p>We've shown something much easier: that every rearrangement is reachable, without considering the
+            number of moves required. The questions "Is it possible?" and "What's the fewest moves it ever takes?"
+            are genuinely different problems, and the second one is usually much harder. Answering it for this
+            puzzle would not be too hard — there are only 9! = 362,880 configurations to check, but there might
             be some interesting related problems in larger grids.</p>
         </div>
       </details>
@@ -936,16 +969,16 @@
             it up to the 4×4 case? In lots of cases we could just do it directly, but there are some irritating
             edge cases. If we want to move position 1 to the final row or final column, we can't just use the top
             left corner. But we can exchange 1 with any position that lies in all four grids, then exchange that
-            position with any other. Redo the first exchange and you've swapped 1 with whatever position you like.
-            We can do similar things for all the edge squares. Once again, we can do all exchanges and hence all
+            position with any other. Redo the first exchange and you've swapped 1 with whatever position you
+            like<span class="footnote" tabindex="0"
+              data-hint="That is, for any x, y, and z, (x y)(y z)(x y) = (x z).">*</span>.
+            We can do similar things for all the edge squares. Once we can do all exchanges, we know we can do all
             permutations.</p>
 
           <p>And why stop at 4? For 5×5 we have overlapping 4×4 grids and then the same trick. For 6×6,
             overlapping 5×5's etc.</p>
 
-          <p>Another approach: adjacent exchanges are enough to generate all exchanges, and in any grid bigger
-            than 3×3 you can always perform an adjacent exchange inside some 3×3 subgrid. But that's probably
-            enough.</p>
+          <p class="the-end">Yes, we're done</p>
         </div>
       </details>
 

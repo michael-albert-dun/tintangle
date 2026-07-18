@@ -70,12 +70,26 @@ body {
 }
 .theorem-label { font-weight: 700; }
 
-.reference-list { margin: 0 0 1.1em; padding: 0; list-style: none; }
-.reference-list li { margin: 0 0 .8em; padding-left: 18px; position: relative; font-size: 1.05rem; line-height: 1.6; }
-.reference-list li::before { position: absolute; left: 0; content: "—"; color: var(--muted); }
-.reference-list li:last-child { margin-bottom: 0; }
+.reference-list, .step-list { margin: 0 0 1.1em; padding: 0; list-style: none; }
+.reference-list li, .step-list li { margin: 0 0 .8em; padding-left: 18px; position: relative; font-size: 1.05rem; line-height: 1.6; }
+.reference-list li::before, .step-list li::before { position: absolute; left: 0; content: "—"; color: var(--muted); }
+.reference-list li:last-child, .step-list li:last-child { margin-bottom: 0; }
 
 .board-figure { margin: 1.6em auto; }
+
+.article p.the-end {
+  width: fit-content;
+  margin: 1.6em auto 0;
+  padding: 8px 22px;
+  border-radius: 999px;
+  background: #1f7a8c;
+  color: #fff;
+  text-align: center;
+  font-size: .82rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
 
 .footnote {
   position: relative;
@@ -285,6 +299,9 @@ body {
 .op-orient-button:hover:not(:disabled), .op-restore-button:hover:not(:disabled), .op-preset-button:hover:not(:disabled), .op-undo-button:hover:not(:disabled) { background: rgba(255, 255, 255, .6); }
 .op-orient-button:focus-visible, .op-restore-button:focus-visible, .op-preset-button:focus-visible, .op-undo-button:focus-visible { outline: 3px solid #1f7a8c; outline-offset: 2px; }
 .op-orient-button:disabled, .op-restore-button:disabled, .op-preset-button:disabled, .op-undo-button:disabled { cursor: default; opacity: .48; }
+
+.triple-a-controls { align-items: center; }
+.triple-a-controls .mini-reset-button { margin: 0; padding: 4px 14px; font-size: .82rem; font-weight: 600; }
 
 .op-status { margin-top: 14px; text-align: center; }
 .op-status p { margin: 6px 0 0; color: var(--muted); font-size: .92rem; }
