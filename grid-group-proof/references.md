@@ -1,7 +1,7 @@
 # References found for the 2x3 grid rotation group (|G_3| = 120)
 
 - Thomas Lam, "Solution to the Number Rotation Puzzle," arXiv:2211.16787
-  (math.CO), 30 Nov 2022. Local copy: `lam_number_rotation_puzzle.pdf`.
+  (math.CO), 30 Nov 2022.
   Studies NRP(n,m,b): an n x m board with b x b rotating blocks. Our 3x3
   grid with 2x2 rotations is literally his "standard NRP." Our 2x3 grid
   with 2x2 rotations is his case (2,3,2); Section 5.1 states, citing Jaap

@@ -167,11 +167,6 @@ for first.
   identification (previously just "almost certainly true" by fingerprint)
   is now proved directly for this construction (Theorem 2), not merely
   inferred.
-- `visualizer.html` -- standalone, open directly in a browser (no build
-  step): interactively mark cells and rotate $2\times2$ subgrids of a 3x3
-  or 2x4 grid. Predates the paper's final geometric argument but uses the
-  same rotation/labelling conventions, so it's still a faithful
-  illustration of what the generators do.
 
 ## Status / possible next steps
 
@@ -183,24 +178,7 @@ normalizes $G$, then a short BFS over symmetry-classes of 3-cycle supports)
 rather than via Jordan's theorem or a bespoke moving lemma; the old
 approaches were fully replaced rather than left as dead commented-out code.
 
-Two directions Michael is currently considering, not yet started:
-
-- **A web-based presentation of the material**, possibly with active/
-  interactive elements (in the spirit of `visualizer.html`, but presenting
-  the *proof* itself rather than just letting someone play with the
-  puzzle -- e.g. reproducing the BFS trees or the $D_4$/$V_4$ symmetry
-  action as something a reader can click through step by step, rather than
-  only reading static `forest` diagrams in the PDF).
-- **A rewrite minimizing or avoiding mathematical terminology**, i.e. a
-  more accessible retelling of the same argument for a non-group-theory
-  audience. Would presumably need to replace or paraphrase: "permutation
-  group", "conjugation", "commutator", "primitive", "3-cycle", "normal
-  subgroup", "simple group", etc., while keeping the actual logical
-  structure (symmetry transport + build-one-shape-per-orbit + BFS) intact,
-  since that structure is the whole point of the elementary approach.
-
-Neither direction has concrete design decisions yet (e.g. whether the web
-version would be a new standalone artifact vs. built on `visualizer.html`;
-whether the low-jargon rewrite would be a separate document or a section
-appended to this one) -- ask Michael for direction before assuming either
-one's shape.
+The web-based, low-jargon presentation of the material (`index.html`,
+"Corner Cases") is also complete: an interactive walkthrough of the same
+argument in casual prose, built around click-to-rotate demos rather than
+static diagrams.
