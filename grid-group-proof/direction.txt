@@ -1,0 +1,86 @@
+Imagine a puzzle --- it consists of a 4x4 grid of coloured blocks that contain letters. It has little knobs that allow you to rotate any 2x2 group of blocks. 
+
+{{Insert static visualisation of unsolved wordtangle board}}
+
+Your objective is to rearrange the blocks in such a way that each group of blocks of the same colour is connected and forms a word (read from the top to bottom, left to right in each row). If you'd like to try a few puzzles of this type before continuing, try out Wordtangle{{Link to wordtangle}}.
+
+{{Insert paragraph about how block-sliding/moving puzzles have a long history, starting from the 15 puzzle (or earlier?) and including links to some implementations including Twiddle by Simon Tatham. Suggest other references to me}}
+
+# The question
+
+In the basic example above, the solution "WORD GAME GRID SWAP" in rows was pretty obvious. But these words could be distributed differently:
+
+{{Example solution with same colours but some other tetrmonino tiling}},
+
+or indeed with different words:
+
+{{Example using MAGE and PAWS instead}}
+
+I hope this suggests the question:
+
+> Can any solution I imagine be reached?
+
+Follow me on the journey to the answer!
+
+# First steps
+
+To start with we're going to look at the corresponding question for a 3x3 grid. Why? Well, because it's likely to be easier, and hopefully when we're done we might understand enough to handle the 4x4 case as well*{{This is like a footnote but should just produce hover text with a very emphatic "That is certainly true"}}
+
+So, we have a 3x3 grid of blocks like this one:
+
+{{ Little 3x3 example with active controls - perhaps use words DOG CAT EMU which happen to have 9 distinct letters}}
+
+But, we want to talk about *all* possible arrangements and *all* possible solutions. So it makes sense to forget about the actual contents of the blocks and just focus on what the rotations are actually doing.
+
+The key insight is that a rotation is simply changing the *positions* of some of the blocks, and that a more complex sequence of rotations is doing the same thing. So keeping track of positions is likely to be helpful. We can represent the starting position simply as
+
+{{ Uncoloured 3x3 example with same tile style filled 1-9 in row-major order with controls, perhaps a reset button too}}
+
+What happens to that if you rotate the upper-left corner, then the lower-right, and then the upper-right? You should get:
+
+{{ Static picture of outcome }}
+
+So position 1 goes to position 3, 2 goes to 5, 3 goes to 6 ... there must be a better way to write that down.
+
+One way is to list the destinations of positions 1 through 9 in a single row as {{insert here}}*{{Called one-line notation for permutations}}. Another way, sometimes more compact, is to follow ``chains of positions'', i.e., since 1 goes to 3, where does 3 go (to 6), then where does 6 go? Eventually those chains close off into loops and we get something like: {{insert cycle notation}}*{{Called cycle notation for permutations}}
+
+# Names and notation
+
+{{Set the names for the operations in a different font or face -- whatever seems most consistent}}
+
+It's going to get tiresome to keep saying things like "rotate the upper left corner". So let's agree that A stands for that, and B, C, and D stand for rotating the upper right, lower left, and lower right corners. It's also useful to note that doing A four times in a row does nothing -- or differently put, doing it three times in a row undoes it*{{If we wanted to get technical, we'd call it the *inverse*}}. That's so convenient it's worth having its own symbol, say a, and likewise b, c, and d.
+
+We can write down each of these in terms of their loops
+
+{{Table of cycles for each basic operation and its inverse}}
+
+And we can see what happens when we apply them one after the other.
+
+{{ 3x3 grid without rotation controls but with a panel of buttons A, a, B, b etc. as well as a reset button. Each time a button is pressed the operation is applied and below it is displayed the current sequence of operations (first operation leftmost) and the cycle notation of the current state.}}
+
+Now try out the sequence ADad. It does something interesting -- it leaves the first and third columns alone, and cycles the middle column down one space (with the 8 floating back to the top). Naturally enough, this is called a 3-cycle. Sequences of moves like this, that make different and structured changes in a puzzle are often a key to its solution. If you've ever done Rubik's cube at all seriously you know this already!
+
+# Three secrets (a digression)
+
+I'm going to tell you three important secrets.
+
+## Secret 1
+
+I'm a mathematician. Well, ok, I suspect that's probably not much of a secret (or at least not a surprising one). But,
+
+## Secret 2
+
+You're probably a mathematician too. Or at least mathematician-adjacent. If you've got this far then you're interested in puzzles and how they work. And, doing he kind of puzzles we're talking about here, as well as many other popular ones such as sudoko {{link}}, ken ken {{link}}, and many other logic puzzles {{one link per word to the most popular logic puzzle sites - ask me for confirmation}}, is indistinguishable from mathematics. And, what I'm explaining here really *is* mathematics.
+
+## Secret 3
+
+Mathematicians are lazy. Hey, let's not have any mathematician-shaming. Let's say mathematicians prefer to avoid unnecessary work. There's a big spectrum of ways in which we do that. One is to go find work that other mathematicians have done already and quote that*{{We have seen that the group of permutations of the positions that we can carry out contains a 3-cycle. It is easy to see that it is two-transitive, hence primitive, so by Jordan's theorem (1873) it is $A_9$ or $S_9$, but it contains odd permutations, so is the latter.}} Another is to find some little observation and then use it in a bunch of different contexts. I'm rather partial to that kind of argument, so that's where we're going from here.
+
+# Some symmetry
+
+Imagine picking up the puzzle and giving it a quarter-turn clockwise before beginning and then applying the moves ADad -- in the sense of "upper left, lower right, upper right backwards, lower right backwards" but using "upper right" in the new position. You'll still cycle three elements but it will be the tree elements 4, 5 and 6 rather than 2, 5 and 8. If instead of rotating the puzzle you'd flipped it over (did I tell you it was two-sided?) it would still be the positions 2, 5 and 8 that you changed, but you'd actually cycle them in the reverse order.
+
+{{ Extend demo as above, to allow for rotating and flipping the grid -- this doesn't appear in the operation sequence but the operations work on the rotated and/or flipped version. We can't do operations, then rotate, then more operations etc.}}
+
+This is the basis for a general rule: any symmetric version of a transformation that we can achieve, is also achievable.
+

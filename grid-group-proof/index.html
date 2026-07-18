@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#edf2f5">
+  <title>Block-Rotation Puzzles</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <main class="page">
+    <article class="article">
+      <p>Imagine a puzzle — it consists of a 4×4 grid of coloured blocks that contain letters. It has little knobs
+        that allow you to rotate any 2×2 group of blocks.</p>
+
+      <figure class="board-figure">
+        <div id="mini-board" class="mini-board"
+          aria-label="Practice board: click a rotation arrow to turn the four tiles around it clockwise.">
+          <div class="mini-tile" data-index="0" role="img" style="--colour:#58a9d5">W</div>
+          <div class="mini-tile" data-index="1" role="img" style="--colour:#58a9d5">O</div>
+          <div class="mini-tile" data-index="2" role="img" style="--colour:#efbd62">A</div>
+          <div class="mini-tile" data-index="3" role="img" style="--colour:#58a9d5">R</div>
+          <div class="mini-tile" data-index="4" role="img" style="--colour:#efbd62">G</div>
+          <div class="mini-tile" data-index="5" role="img" style="--colour:#67bda1">R</div>
+          <div class="mini-tile" data-index="6" role="img" style="--colour:#efbd62">E</div>
+          <div class="mini-tile" data-index="7" role="img" style="--colour:#58a9d5">D</div>
+          <div class="mini-tile" data-index="8" role="img" style="--colour:#67bda1">G</div>
+          <div class="mini-tile" data-index="9" role="img" style="--colour:#67bda1">I</div>
+          <div class="mini-tile" data-index="10" role="img" style="--colour:#efbd62">M</div>
+          <div class="mini-tile" data-index="11" role="img" style="--colour:#67bda1">D</div>
+          <div class="mini-tile" data-index="12" role="img" style="--colour:#d98778">S</div>
+          <div class="mini-tile" data-index="13" role="img" style="--colour:#d98778">W</div>
+          <div class="mini-tile" data-index="14" role="img" style="--colour:#d98778">A</div>
+          <div class="mini-tile" data-index="15" role="img" style="--colour:#d98778">P</div>
+
+          <button type="button" class="mini-rotation-icon" style="--row:1;--column:1" data-row="0" data-column="0"
+            aria-label="Rotate the four tiles around this corner clockwise"><svg viewBox="0 0 24 24">
+              <path d="M18.8 9.8A7.2 7.2 0 1 0 19 14" />
+              <path d="M18.8 4.5v5.3h-5.3" />
+            </svg></button>
+          <button type="button" class="mini-rotation-icon" style="--row:1;--column:2" data-row="0" data-column="1"
+            aria-label="Rotate the four tiles around this corner clockwise"><svg viewBox="0 0 24 24">
+              <path d="M18.8 9.8A7.2 7.2 0 1 0 19 14" />
+              <path d="M18.8 4.5v5.3h-5.3" />
+            </svg></button>
+          <button type="button" class="mini-rotation-icon" style="--row:1;--column:3" data-row="0" data-column="2"
+            aria-label="Rotate the four tiles around this corner clockwise"><svg viewBox="0 0 24 24">
+              <path d="M18.8 9.8A7.2 7.2 0 1 0 19 14" />
+              <path d="M18.8 4.5v5.3h-5.3" />
+            </svg></button>
+          <button type="button" class="mini-rotation-icon" style="--row:2;--column:1" data-row="1" data-column="0"
+            aria-label="Rotate the four tiles around this corner clockwise"><svg viewBox="0 0 24 24">
+              <path d="M18.8 9.8A7.2 7.2 0 1 0 19 14" />
+              <path d="M18.8 4.5v5.3h-5.3" />
+            </svg></button>
+          <button type="button" class="mini-rotation-icon" style="--row:2;--column:2" data-row="1" data-column="1"
+            aria-label="Rotate the four tiles around this corner clockwise"><svg viewBox="0 0 24 24">
+              <path d="M18.8 9.8A7.2 7.2 0 1 0 19 14" />
+              <path d="M18.8 4.5v5.3h-5.3" />
+            </svg></button>
+          <button type="button" class="mini-rotation-icon" style="--row:2;--column:3" data-row="1" data-column="2"
+            aria-label="Rotate the four tiles around this corner clockwise"><svg viewBox="0 0 24 24">
+              <path d="M18.8 9.8A7.2 7.2 0 1 0 19 14" />
+              <path d="M18.8 4.5v5.3h-5.3" />
+            </svg></button>
+          <button type="button" class="mini-rotation-icon" style="--row:3;--column:1" data-row="2" data-column="0"
+            aria-label="Rotate the four tiles around this corner clockwise"><svg viewBox="0 0 24 24">
+              <path d="M18.8 9.8A7.2 7.2 0 1 0 19 14" />
+              <path d="M18.8 4.5v5.3h-5.3" />
+            </svg></button>
+          <button type="button" class="mini-rotation-icon" style="--row:3;--column:2" data-row="2" data-column="1"
+            aria-label="Rotate the four tiles around this corner clockwise"><svg viewBox="0 0 24 24">
+              <path d="M18.8 9.8A7.2 7.2 0 1 0 19 14" />
+              <path d="M18.8 4.5v5.3h-5.3" />
+            </svg></button>
+          <button type="button" class="mini-rotation-icon" style="--row:3;--column:3" data-row="2" data-column="2"
+            aria-label="Rotate the four tiles around this corner clockwise"><svg viewBox="0 0 24 24">
+              <path d="M18.8 9.8A7.2 7.2 0 1 0 19 14" />
+              <path d="M18.8 4.5v5.3h-5.3" />
+            </svg></button>
+        </div>
+      </figure>
+
+      <p>Your objective is to rearrange the blocks in such a way that each group of blocks of the same colour is
+        connected and forms a word. This example is pretty easy! If you'd like to try some harder
+        puzzles of this type before continuing, I suggest <a
+          href="https://michael-albert-dun.github.io/tintangle/wordtangle/">Wordtangle</a>.</p>
+
+      <details class="section">
+        <summary>History</summary>
+        <div class="section-body">
+          <p>Puzzles built from shuffling blocks around a grid go back further than you might guess. The most famous
+            ancestor is the <a href="https://en.wikipedia.org/wiki/15_puzzle">15 Puzzle</a>, which swept the United
+            States and then Europe in a matter of months in 1880. Its popular origin story is wrong, as it happens:
+            the showman Sam Loyd spent twenty years claiming he'd invented it, but puzzle historians Jerry Slocum and
+            Dic Sonneveld eventually traced the real inventor to Noyes Chapman, a postmaster in Canastota, New York,
+            who'd been circulating homemade copies since 1874.</p>
+
+          <p>The 15 Puzzle slides tiles into a single empty gap. This puzzle instead rotates whole 2×2 blocks with no
+            gap at all — but the two families are closer than they look:
+            <a href="https://www.jaapsch.net/puzzles/graphpuzz.htm">sliding a piece all the way around a loop back to
+              where it started has exactly the same effect as a rotation</a>. You can try both mechanics yourself in
+            Simon Tatham's Portable Puzzle Collection: <a
+              href="https://www.chiark.greenend.org.uk/~sgtatham/puzzles/js/fifteen.html">Fifteen</a>
+            is the classic sliding original, <a
+              href="https://www.chiark.greenend.org.uk/~sgtatham/puzzles/js/sixteen.html">Sixteen</a>
+            shifts whole rows and columns instead, and <a
+              href="https://www.chiark.greenend.org.uk/~sgtatham/puzzles/js/twiddle.html">Twiddle</a>
+            rotates 2×2 (or larger) blocks, just like here — Tatham says he first met that move inside a puzzle from
+            Metroid Prime 2. Turning blocks is, of course, also basically what a Rubik's Cube does, just on the faces
+            of a cube instead of a flat grid.
+          </p>
+
+          <p>The mathematical version of this rotate-a-block puzzle was formalised recently, in Thomas Lam's
+            2022 paper <a href="https://arxiv.org/abs/2211.16787">"Solution to the Number Rotation Puzzle"</a>.</p>
+        </div>
+      </details>
+
+      <details class="section">
+        <summary>The question</summary>
+        <div class="section-body">
+          <p>In the basic example above, the solution "WORD GAME GRID SWAP" in rows was pretty obvious. But
+            these words could be distributed differently:</p>
+
+          <figure class="board-figure">
+            <div class="mini-board" role="img"
+              aria-label="A solved board: the same four words WORD, GAME, GRID and SWAP, but arranged as four interlocking L-shaped groups instead of straight rows.">
+              <div class="mini-tile" style="--colour:#58a9d5">W</div>
+              <div class="mini-tile" style="--colour:#58a9d5">O</div>
+              <div class="mini-tile" style="--colour:#58a9d5">R</div>
+              <div class="mini-tile" style="--colour:#efbd62">G</div>
+              <div class="mini-tile" style="--colour:#67bda1">G</div>
+              <div class="mini-tile" style="--colour:#67bda1">R</div>
+              <div class="mini-tile" style="--colour:#58a9d5">D</div>
+              <div class="mini-tile" style="--colour:#efbd62">A</div>
+              <div class="mini-tile" style="--colour:#67bda1">I</div>
+              <div class="mini-tile" style="--colour:#d98778">S</div>
+              <div class="mini-tile" style="--colour:#efbd62">M</div>
+              <div class="mini-tile" style="--colour:#efbd62">E</div>
+              <div class="mini-tile" style="--colour:#67bda1">D</div>
+              <div class="mini-tile" style="--colour:#d98778">W</div>
+              <div class="mini-tile" style="--colour:#d98778">A</div>
+              <div class="mini-tile" style="--colour:#d98778">P</div>
+            </div>
+          </figure>
+
+          <p>or indeed with different words:</p>
+
+          <figure class="board-figure">
+            <div class="mini-board" role="img"
+              aria-label="A solved board using the words WORD, MAGE, GRID and PAWS instead, arranged as four interlocking T-shaped groups rather than rows.">
+              <div class="mini-tile" style="--colour:#58a9d5">W</div>
+              <div class="mini-tile" style="--colour:#58a9d5">O</div>
+              <div class="mini-tile" style="--colour:#58a9d5">R</div>
+              <div class="mini-tile" style="--colour:#efbd62">M</div>
+              <div class="mini-tile" style="--colour:#67bda1">G</div>
+              <div class="mini-tile" style="--colour:#58a9d5">D</div>
+              <div class="mini-tile" style="--colour:#efbd62">A</div>
+              <div class="mini-tile" style="--colour:#efbd62">G</div>
+              <div class="mini-tile" style="--colour:#67bda1">R</div>
+              <div class="mini-tile" style="--colour:#67bda1">I</div>
+              <div class="mini-tile" style="--colour:#d98778">P</div>
+              <div class="mini-tile" style="--colour:#efbd62">E</div>
+              <div class="mini-tile" style="--colour:#67bda1">D</div>
+              <div class="mini-tile" style="--colour:#d98778">A</div>
+              <div class="mini-tile" style="--colour:#d98778">W</div>
+              <div class="mini-tile" style="--colour:#d98778">S</div>
+            </div>
+          </figure>
+
+          <p>I hope this suggests the question:</p>
+
+          <blockquote>Can any solution I imagine be reached?</blockquote>
+
+          <p>Let's find out.</p>
+        </div>
+      </details>
+
+      <details class="section">
+        <summary>First steps</summary>
+        <div class="section-body">
+          <p>To start with we're going to look at the corresponding question for a 3×3 grid. Why? Well, because
+            it's likely to be easier, and hopefully when we're done we might understand enough to handle the 4×4
+            case as well<span class="footnote" tabindex="0" data-hint="That is certainly true.">*</span>.</p>
+
+          <p>So, we have a 3×3 grid of blocks like this one:</p>
+
+          <figure class="board-figure">
+            <div class="mini-board" style="--board-size:3"
+              aria-label="A 3 by 3 practice board: click a rotation arrow to turn the four tiles around it clockwise.">
+              <div class="mini-tile" data-index="0" role="img" style="--colour:#58a9d5">D</div>
+              <div class="mini-tile" data-index="1" role="img" style="--colour:#58a9d5">O</div>
+              <div class="mini-tile" data-index="2" role="img" style="--colour:#58a9d5">G</div>
+              <div class="mini-tile" data-index="3" role="img" style="--colour:#efbd62">C</div>
+              <div class="mini-tile" data-index="4" role="img" style="--colour:#efbd62">A</div>
+              <div class="mini-tile" data-index="5" role="img" style="--colour:#efbd62">T</div>
+              <div class="mini-tile" data-index="6" role="img" style="--colour:#67bda1">E</div>
+              <div class="mini-tile" data-index="7" role="img" style="--colour:#67bda1">M</div>
+              <div class="mini-tile" data-index="8" role="img" style="--colour:#67bda1">U</div>
+
+              <button type="button" class="mini-rotation-icon" style="--row:1;--column:1" data-row="0" data-column="0"
+                aria-label="Rotate the four tiles around this corner clockwise"><svg viewBox="0 0 24 24">
+                  <path d="M18.8 9.8A7.2 7.2 0 1 0 19 14" />
+                  <path d="M18.8 4.5v5.3h-5.3" />
+                </svg></button>
+              <button type="button" class="mini-rotation-icon" style="--row:1;--column:2" data-row="0" data-column="1"
+                aria-label="Rotate the four tiles around this corner clockwise"><svg viewBox="0 0 24 24">
+                  <path d="M18.8 9.8A7.2 7.2 0 1 0 19 14" />
+                  <path d="M18.8 4.5v5.3h-5.3" />
+                </svg></button>
+              <button type="button" class="mini-rotation-icon" style="--row:2;--column:1" data-row="1" data-column="0"
+                aria-label="Rotate the four tiles around this corner clockwise"><svg viewBox="0 0 24 24">
+                  <path d="M18.8 9.8A7.2 7.2 0 1 0 19 14" />
+                  <path d="M18.8 4.5v5.3h-5.3" />
+                </svg></button>
+              <button type="button" class="mini-rotation-icon" style="--row:2;--column:2" data-row="1" data-column="1"
+                aria-label="Rotate the four tiles around this corner clockwise"><svg viewBox="0 0 24 24">
+                  <path d="M18.8 9.8A7.2 7.2 0 1 0 19 14" />
+                  <path d="M18.8 4.5v5.3h-5.3" />
+                </svg></button>
+            </div>
+          </figure>
+
+          <p>But, we want to talk about <em>all</em> possible arrangements and <em>all</em> possible solutions. So
+            it makes sense to forget about the actual contents of the blocks and just focus on what the rotations
+            are actually doing.</p>
+
+          <p>A rotation simply changes the <em>positions</em> of some of the blocks,
+            and a more complex sequence of rotations is doing the same thing. So keeping track of positions is
+            likely to be helpful. We can represent the starting position simply as</p>
+
+          <figure class="board-figure">
+            <div class="mini-board" style="--board-size:3"
+              aria-label="A 3 by 3 practice board numbered 1 to 9 in reading order: click a rotation arrow to turn the four tiles around it clockwise.">
+              <div class="mini-tile" data-index="0" role="img" style="--colour:#dbe3ea">1</div>
+              <div class="mini-tile" data-index="1" role="img" style="--colour:#dbe3ea">2</div>
+              <div class="mini-tile" data-index="2" role="img" style="--colour:#dbe3ea">3</div>
+              <div class="mini-tile" data-index="3" role="img" style="--colour:#dbe3ea">4</div>
+              <div class="mini-tile" data-index="4" role="img" style="--colour:#dbe3ea">5</div>
+              <div class="mini-tile" data-index="5" role="img" style="--colour:#dbe3ea">6</div>
+              <div class="mini-tile" data-index="6" role="img" style="--colour:#dbe3ea">7</div>
+              <div class="mini-tile" data-index="7" role="img" style="--colour:#dbe3ea">8</div>
+              <div class="mini-tile" data-index="8" role="img" style="--colour:#dbe3ea">9</div>
+
+              <button type="button" class="mini-rotation-icon" style="--row:1;--column:1" data-row="0" data-column="0"
+                aria-label="Rotate the four tiles around this corner clockwise"><svg viewBox="0 0 24 24">
+                  <path d="M18.8 9.8A7.2 7.2 0 1 0 19 14" />
+                  <path d="M18.8 4.5v5.3h-5.3" />
+                </svg></button>
+              <button type="button" class="mini-rotation-icon" style="--row:1;--column:2" data-row="0" data-column="1"
+                aria-label="Rotate the four tiles around this corner clockwise"><svg viewBox="0 0 24 24">
+                  <path d="M18.8 9.8A7.2 7.2 0 1 0 19 14" />
+                  <path d="M18.8 4.5v5.3h-5.3" />
+                </svg></button>
+              <button type="button" class="mini-rotation-icon" style="--row:2;--column:1" data-row="1" data-column="0"
+                aria-label="Rotate the four tiles around this corner clockwise"><svg viewBox="0 0 24 24">
+                  <path d="M18.8 9.8A7.2 7.2 0 1 0 19 14" />
+                  <path d="M18.8 4.5v5.3h-5.3" />
+                </svg></button>
+              <button type="button" class="mini-rotation-icon" style="--row:2;--column:2" data-row="1" data-column="1"
+                aria-label="Rotate the four tiles around this corner clockwise"><svg viewBox="0 0 24 24">
+                  <path d="M18.8 9.8A7.2 7.2 0 1 0 19 14" />
+                  <path d="M18.8 4.5v5.3h-5.3" />
+                </svg></button>
+            </div>
+            <button type="button" class="mini-reset-button">Reset</button>
+          </figure>
+
+          <p>What happens to that if you rotate the upper-left corner, then the lower-right, and then the
+            upper-right? You should get:</p>
+
+          <figure class="board-figure">
+            <div class="mini-board" style="--board-size:3" role="img"
+              aria-label="The result: 4, 8, 1 on the top row; 5, 2, 3 in the middle row; 7, 9, 6 on the bottom row.">
+              <div class="mini-tile" style="--colour:#dbe3ea">4</div>
+              <div class="mini-tile" style="--colour:#dbe3ea">8</div>
+              <div class="mini-tile" style="--colour:#dbe3ea">1</div>
+              <div class="mini-tile" style="--colour:#dbe3ea">5</div>
+              <div class="mini-tile" style="--colour:#dbe3ea">2</div>
+              <div class="mini-tile" style="--colour:#dbe3ea">3</div>
+              <div class="mini-tile" style="--colour:#dbe3ea">7</div>
+              <div class="mini-tile" style="--colour:#dbe3ea">9</div>
+              <div class="mini-tile" style="--colour:#dbe3ea">6</div>
+            </div>
+          </figure>
+
+          <p>So position 1 goes to position 3, 2 goes to 5, 3 goes to 6 … there must be a better way to write
+            that down.</p>
+
+          <p>One way is to list the destinations of positions 1 through 9 in a single row, as
+            <span class="notation">3 5 6 1 4 9 7 2 8</span><span class="footnote" tabindex="0"
+              data-hint="Called one-line notation for permutations.">*</span>. Another way, sometimes more
+            compact, is to follow "chains of positions" — since 1 goes to 3, where does 3 go (to 6), then where
+            does 6 go? Eventually those chains close off into loops and we get something like
+            <span class="notation">(1 3 6 9 8 2 5 4)</span><span class="footnote" tabindex="0"
+              data-hint="Called cycle notation for permutations.">*</span>, leaving 7 fixed in place.</p>
+        </div>
+      </details>
+
+      <details class="section">
+        <summary>Names and notation</summary>
+        <div class="section-body">
+          <p>It's going to get tiresome to keep saying things like "rotate the upper left corner". So let's agree
+            that <span class="notation">A</span> stands for that, and <span class="notation">B</span>,
+            <span class="notation">C</span>, and <span class="notation">D</span> stand for rotating the upper
+            right, lower left, and lower right corners. It's also useful to note that doing
+            <span class="notation">A</span> four times in a row does nothing — or differently put, doing it three
+            times in a row undoes it<span class="footnote" tabindex="0"
+              data-hint="If we wanted to get technical, we'd call it the inverse.">*</span>. That's so convenient
+            it's worth having its own symbol, say <span class="notation">a</span>, and likewise
+            <span class="notation">b</span>, <span class="notation">c</span>, and <span class="notation">d</span>.</p>
+
+          <p>We can write these down in terms of their loops:</p>
+
+          <table class="op-table">
+            <thead>
+              <tr>
+                <th scope="col">Operation</th>
+                <th scope="col">Cycles</th>
+                <th scope="col">Inverse</th>
+                <th scope="col">Cycles</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="notation">A</span></td>
+                <td><span class="notation">(1 2 5 4)</span></td>
+                <td><span class="notation">a</span></td>
+                <td><span class="notation">(1 4 5 2)</span></td>
+              </tr>
+              <tr>
+                <td><span class="notation">B</span></td>
+                <td><span class="notation">(2 3 6 5)</span></td>
+                <td><span class="notation">b</span></td>
+                <td><span class="notation">(2 5 6 3)</span></td>
+              </tr>
+              <tr>
+                <td><span class="notation">C</span></td>
+                <td><span class="notation">(4 5 8 7)</span></td>
+                <td><span class="notation">c</span></td>
+                <td><span class="notation">(4 7 8 5)</span></td>
+              </tr>
+              <tr>
+                <td><span class="notation">D</span></td>
+                <td><span class="notation">(5 6 9 8)</span></td>
+                <td><span class="notation">d</span></td>
+                <td><span class="notation">(5 8 9 6)</span></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p>And, we can see what happens when we apply them one after the other.</p>
+
+          <figure class="board-figure">
+            <div class="mini-board op-board" style="--board-size:3"
+              aria-label="A 3 by 3 board numbered 1 to 9. Use the lettered buttons below to apply operations to it.">
+              <div class="mini-tile" data-index="0" role="img" style="--colour:#dbe3ea">1</div>
+              <div class="mini-tile" data-index="1" role="img" style="--colour:#dbe3ea">2</div>
+              <div class="mini-tile" data-index="2" role="img" style="--colour:#dbe3ea">3</div>
+              <div class="mini-tile" data-index="3" role="img" style="--colour:#dbe3ea">4</div>
+              <div class="mini-tile" data-index="4" role="img" style="--colour:#dbe3ea">5</div>
+              <div class="mini-tile" data-index="5" role="img" style="--colour:#dbe3ea">6</div>
+              <div class="mini-tile" data-index="6" role="img" style="--colour:#dbe3ea">7</div>
+              <div class="mini-tile" data-index="7" role="img" style="--colour:#dbe3ea">8</div>
+              <div class="mini-tile" data-index="8" role="img" style="--colour:#dbe3ea">9</div>
+            </div>
+
+            <div class="op-buttons" role="group" aria-label="Apply an operation">
+              <div class="op-pair">
+                <button type="button" class="op-button" data-op="A" aria-label="Apply A: rotate the upper-left corner clockwise">A</button>
+                <span class="op-slash" aria-hidden="true">/</span>
+                <button type="button" class="op-button" data-op="a" aria-label="Apply a: rotate the upper-left corner anticlockwise">a</button>
+              </div>
+              <div class="op-pair">
+                <button type="button" class="op-button" data-op="B" aria-label="Apply B: rotate the upper-right corner clockwise">B</button>
+                <span class="op-slash" aria-hidden="true">/</span>
+                <button type="button" class="op-button" data-op="b" aria-label="Apply b: rotate the upper-right corner anticlockwise">b</button>
+              </div>
+              <div class="op-pair">
+                <button type="button" class="op-button" data-op="C" aria-label="Apply C: rotate the lower-left corner clockwise">C</button>
+                <span class="op-slash" aria-hidden="true">/</span>
+                <button type="button" class="op-button" data-op="c" aria-label="Apply c: rotate the lower-left corner anticlockwise">c</button>
+              </div>
+              <div class="op-pair">
+                <button type="button" class="op-button" data-op="D" aria-label="Apply D: rotate the lower-right corner clockwise">D</button>
+                <span class="op-slash" aria-hidden="true">/</span>
+                <button type="button" class="op-button" data-op="d" aria-label="Apply d: rotate the lower-right corner anticlockwise">d</button>
+              </div>
+            </div>
+            <button type="button" class="mini-reset-button op-reset">Reset</button>
+
+            <div class="op-status">
+              <p>Sequence applied: <span class="notation op-sequence">(none yet)</span></p>
+              <p>Current permutation: <span class="notation op-cycles">(no change)</span></p>
+            </div>
+          </figure>
+
+          <p>Now try out the sequence <span class="notation">A D a d</span>. It does something interesting — it
+            leaves the first and third columns alone, and cycles the middle column down one space (with the 8
+            floating back to the top). Naturally enough, this is called a 3-cycle. Sequences of moves like this,
+            that make different and structured changes in a puzzle, are often a key to its solution. If you've
+            ever done Rubik's cube at all seriously you know this already!</p>
+        </div>
+      </details>
+
+      <details class="section">
+        <summary>Three secrets (a digression)</summary>
+        <div class="section-body">
+          <p>I'm going to tell you three important secrets.</p>
+
+          <h3>Secret 1</h3>
+
+          <p>I'm a mathematician. Well, ok, I suspect that's probably not much of a secret (or at least not a
+            surprising one). But,</p>
+
+          <h3>Secret 2</h3>
+
+          <p>You're probably a mathematician too. Or at least mathematician-adjacent. If you've got this far then
+            you're interested in puzzles and how they work. And, doing the kind of puzzles we're talking about
+            here, as well as many other popular ones such as
+            <a href="https://en.wikipedia.org/wiki/Sudoku">sudoku</a>,
+            <a href="https://en.wikipedia.org/wiki/KenKen">ken ken</a>, and
+            <a href="https://en.wikipedia.org/wiki/Kakuro">many</a>
+            <a href="https://en.wikipedia.org/wiki/Nonogram">other</a>
+            <a href="https://en.wikipedia.org/wiki/Slitherlink">logic</a>
+            <a href="https://en.wikipedia.org/wiki/Masyu">puzzles</a>, is indistinguishable from mathematics. And,
+            what I'm explaining here really <em>is</em> mathematics. If you want to see just how deep that rabbit
+            hole goes, take a look at the puzzles hosted at
+            <a href="https://www.logic-masters.de/">logic-masters.de</a>.</p>
+
+          <h3>Secret 3</h3>
+
+          <p>Mathematicians are lazy. Hey, let's not have any mathematician-shaming. Let's say mathematicians
+            prefer to avoid unnecessary work. There's a big spectrum of ways in which we do that. One is to go
+            find work that other mathematicians have done already and quote that<span class="footnote" tabindex="0"
+              data-hint="We have seen that the group of permutations of the positions we can carry out contains a 3-cycle. It is easy to see that it is two-transitive, hence primitive, so by Jordan's theorem (1873) it is A₉ or S₉, but it contains odd permutations, so it's the latter.">*</span>.
+            Another is to find some little observation and then use it in a bunch of different contexts. I'm
+            rather partial to that kind of argument, so that's where we're going from here.</p>
+        </div>
+      </details>
+
+      <details class="section">
+        <summary>Some symmetry</summary>
+        <div class="section-body">
+          <p>Imagine picking up the puzzle and giving it a quarter-turn clockwise before you start, and then
+            applying the same moves <span class="notation">A D a d</span> as before, using the same corner
+            locations as always. If you don't account for that initial turn, what you'll see is a messier tangle —
+            the turn's own effect gets mixed in with the three-cycle. Rotate (or flip) the board below, apply
+            <span class="notation">A D a d</span>, and then use "Restore orientation" to peel the initial turn back
+            off: you'll find it's the three elements 4, 5 and 6 that cycled, rather than 2, 5 and 8. Flipping the
+            board over instead (did I tell you it was two-sided?) leaves the positions 2, 5 and 8 unchanged as a
+            set, but reverses the order in which they cycle.</p>
+
+          <figure class="board-figure">
+            <div class="mini-board op-board" style="--board-size:3"
+              aria-label="A 3 by 3 board numbered 1 to 9. Rotate or flip the whole board, apply operations, then restore its orientation.">
+              <div class="mini-tile" data-index="0" role="img" style="--colour:#dbe3ea">1</div>
+              <div class="mini-tile" data-index="1" role="img" style="--colour:#dbe3ea">2</div>
+              <div class="mini-tile" data-index="2" role="img" style="--colour:#dbe3ea">3</div>
+              <div class="mini-tile" data-index="3" role="img" style="--colour:#dbe3ea">4</div>
+              <div class="mini-tile" data-index="4" role="img" style="--colour:#dbe3ea">5</div>
+              <div class="mini-tile" data-index="5" role="img" style="--colour:#dbe3ea">6</div>
+              <div class="mini-tile" data-index="6" role="img" style="--colour:#dbe3ea">7</div>
+              <div class="mini-tile" data-index="7" role="img" style="--colour:#dbe3ea">8</div>
+              <div class="mini-tile" data-index="8" role="img" style="--colour:#dbe3ea">9</div>
+            </div>
+
+            <div class="op-panels">
+              <div class="op-panel">
+                <p class="op-panel-title">Orient</p>
+                <div class="op-orient-column" role="group" aria-label="Rotate or flip the whole board">
+                  <button type="button" class="op-orient-button" data-orient="rotate">Rotate 90°</button>
+                  <button type="button" class="op-orient-button" data-orient="flip">Flip</button>
+                </div>
+              </div>
+
+              <div class="op-panel">
+                <p class="op-panel-title">Operate</p>
+                <div class="op-buttons" role="group" aria-label="Apply an operation">
+                  <div class="op-pair">
+                    <button type="button" class="op-button" data-op="A" aria-label="Apply A: rotate the upper-left corner location clockwise">A</button>
+                    <span class="op-slash" aria-hidden="true">/</span>
+                    <button type="button" class="op-button" data-op="a" aria-label="Apply a: rotate the upper-left corner location anticlockwise">a</button>
+                  </div>
+                  <div class="op-pair">
+                    <button type="button" class="op-button" data-op="B" aria-label="Apply B: rotate the upper-right corner location clockwise">B</button>
+                    <span class="op-slash" aria-hidden="true">/</span>
+                    <button type="button" class="op-button" data-op="b" aria-label="Apply b: rotate the upper-right corner location anticlockwise">b</button>
+                  </div>
+                  <div class="op-pair">
+                    <button type="button" class="op-button" data-op="C" aria-label="Apply C: rotate the lower-left corner location clockwise">C</button>
+                    <span class="op-slash" aria-hidden="true">/</span>
+                    <button type="button" class="op-button" data-op="c" aria-label="Apply c: rotate the lower-left corner location anticlockwise">c</button>
+                  </div>
+                  <div class="op-pair">
+                    <button type="button" class="op-button" data-op="D" aria-label="Apply D: rotate the lower-right corner location clockwise">D</button>
+                    <span class="op-slash" aria-hidden="true">/</span>
+                    <button type="button" class="op-button" data-op="d" aria-label="Apply d: rotate the lower-right corner location anticlockwise">d</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="op-panel">
+                <p class="op-panel-title">Restore</p>
+                <button type="button" class="op-restore-button">Restore orientation</button>
+              </div>
+            </div>
+
+            <button type="button" class="mini-reset-button op-reset">Reset</button>
+
+            <div class="op-status">
+              <p>Sequence applied: <span class="notation op-sequence">(none yet)</span></p>
+              <p>Current permutation: <span class="notation op-cycles">(no change)</span></p>
+            </div>
+          </figure>
+
+          <p>This is the basis for a general rule: any symmetric version of a transformation that we can achieve,
+            is also achievable.</p>
+        </div>
+      </details>
+    </article>
+  </main>
+  <script src="src/mini-board.js" defer></script>
+  <script src="src/operations-panel.js" defer></script>
+</body>
+
+</html>
