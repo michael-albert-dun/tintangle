@@ -45,6 +45,18 @@ function initTripleADemo(boardElement) {
     render();
   });
 
+  let isHovered = false;
+  figure.addEventListener("pointerenter", () => { isHovered = true; });
+  figure.addEventListener("pointerleave", () => { isHovered = false; });
+  document.addEventListener("keydown", (event) => {
+    if (!isHovered || event.altKey || event.ctrlKey || event.metaKey) return;
+    if (!/^[1-9]$/.test(event.key)) return;
+    const index = board.indexOf(event.key);
+    if (index === -1) return;
+    event.preventDefault();
+    tiles[index].click();
+  });
+
   function applyTriple(current, positions) {
     const next = current.slice();
     next[positions[1]] = current[positions[0]];

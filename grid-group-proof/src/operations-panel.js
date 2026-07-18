@@ -132,6 +132,17 @@ function initOperationsPanel(boardElement) {
     });
   }
 
+  let isHovered = false;
+  figure.addEventListener("pointerenter", () => { isHovered = true; });
+  figure.addEventListener("pointerleave", () => { isHovered = false; });
+  document.addEventListener("keydown", (event) => {
+    if (!isHovered || event.altKey || event.ctrlKey || event.metaKey) return;
+    const button = [...opButtons, ...setupButtons].find((candidate) => candidate.dataset.op === event.key);
+    if (!button) return;
+    event.preventDefault();
+    button.click();
+  });
+
   function jumpToTriple(targetPositions) {
     board = board.map((_, index) => (targetPositions.includes(index + 1) ? "1" : "0"));
   }
