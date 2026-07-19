@@ -517,10 +517,10 @@ function isLegal(balls, blocked, terrain, row, column, clockwise) {
 function rotateAt(row, column) {
   if (state.complete || state.roundOver) return;
   if (!isLegal(state.balls, state.blocked, state.terrain, row, column, state.clockwise)) return;
-  performRotation(row, column, 270, state.clockwise);
+  performRotation(row, column, 351, state.clockwise);
 }
 
-function performRotation(row, column, animationDuration = 270, clockwise = true) {
+function performRotation(row, column, animationDuration = 351, clockwise = true) {
   const tileRects = tileRectangles();
   const previousBalls = state.balls;
   state.moveHistory.push(previousBalls);
@@ -837,11 +837,27 @@ function tileRectangles() {
   return new Map([...elements.board.querySelectorAll(".tile")].map((tile) => [Number(tile.dataset.index), tile.getBoundingClientRect()]));
 }
 
-function animateRotation(row, column, clockwise, previousBalls, previousRects, duration = 270) {
+const ARC_ANIMATION_STEPS = 16;
+
+function animateRotation(row, column, clockwise, previousBalls, previousRects, duration = 351) {
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   const order = rotationOrder(row, column, clockwise);
   const frozen = frozenMap(previousBalls, state.terrain, order);
   const sources = effectiveSources(order, frozen);
+
+  // Every ball that actually animates here is making a genuine one-step
+  // move to its physically adjacent cell (a move requiring a longer skip
+  // past a sunk ball is already illegal), so it always sweeps a true 90°
+  // arc around the corner's pivot -- the shared point all four cells meet
+  // at, i.e. the centre of their combined bounding box.
+  const [topLeft, , bottomRight] = cornerCells(row, column);
+  const topLeftRect = previousRects.get(topLeft);
+  const bottomRightRect = previousRects.get(bottomRight);
+  if (!topLeftRect || !bottomRightRect) return;
+  const pivot = {
+    x: (topLeftRect.left + bottomRightRect.right) / 2,
+    y: (topLeftRect.top + bottomRightRect.bottom) / 2
+  };
 
   order.forEach((destination, index) => {
     if (frozen[index]) return;
@@ -852,10 +868,27 @@ function animateRotation(row, column, clockwise, previousBalls, previousRects, d
     const target = tile && tile.querySelector(".ball");
     if (!sourceRect || !target || typeof target.animate !== "function") return;
     const destinationRect = tile.getBoundingClientRect();
-    target.animate([
-      { transform: `translate(${sourceRect.left - destinationRect.left}px, ${sourceRect.top - destinationRect.top}px)`, zIndex: 1 },
-      { transform: "translate(0, 0)", zIndex: 1 }
-    ], { duration, easing: "cubic-bezier(.2, .8, .2, 1)" });
+
+    const sourceCenter = { x: sourceRect.left + sourceRect.width / 2, y: sourceRect.top + sourceRect.height / 2 };
+    const destinationCenter = { x: destinationRect.left + destinationRect.width / 2, y: destinationRect.top + destinationRect.height / 2 };
+    const sourceRadius = Math.hypot(sourceCenter.x - pivot.x, sourceCenter.y - pivot.y);
+    const destinationRadius = Math.hypot(destinationCenter.x - pivot.x, destinationCenter.y - pivot.y);
+    const startAngle = Math.atan2(sourceCenter.y - pivot.y, sourceCenter.x - pivot.x);
+    const endAngle = Math.atan2(destinationCenter.y - pivot.y, destinationCenter.x - pivot.x);
+    let sweep = endAngle - startAngle;
+    if (sweep > Math.PI) sweep -= 2 * Math.PI;
+    if (sweep < -Math.PI) sweep += 2 * Math.PI;
+
+    const keyframes = [];
+    for (let step = 0; step <= ARC_ANIMATION_STEPS; step += 1) {
+      const t = step / ARC_ANIMATION_STEPS;
+      const angle = startAngle + sweep * t;
+      const radius = sourceRadius + (destinationRadius - sourceRadius) * t;
+      const pointX = pivot.x + radius * Math.cos(angle);
+      const pointY = pivot.y + radius * Math.sin(angle);
+      keyframes.push({ transform: `translate(${pointX - destinationCenter.x}px, ${pointY - destinationCenter.y}px)`, zIndex: 1 });
+    }
+    target.animate(keyframes, { duration, easing: "cubic-bezier(.2, .8, .2, 1)" });
   });
 }
 
