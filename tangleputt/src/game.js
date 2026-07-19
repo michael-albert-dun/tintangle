@@ -1,7 +1,10 @@
 const SIZE = 4;
 const CELL_COUNT = SIZE * SIZE;
 const PAR_OFFSET = 2;
+const REDUCED_PAR_OFFSET = 1;
 const ALBATROSS_PAR_OFFSET = 3;
+const SMALL_OPTIMUM_THRESHOLD = 4;
+const MAX_STANDARD_PAR_HOLES = 5;
 const ROUND_LENGTH = 9;
 const MAX_SEARCH_DEPTH = 6;
 const MAX_GENERATION_ATTEMPTS = 200;
@@ -24,6 +27,7 @@ const INCOMPLETE_RESULT = SCORE_LABELS[SCORE_LABELS.length - 1];
 const state = {
   course: [],
   pars: [],
+  offsets: [],
   albatrossHole: 1,
   holeNumber: 1,
   terrain: [],
@@ -72,7 +76,7 @@ boot();
 function boot() {
   const shared = courseFromUrl();
   if (shared) {
-    applyCourse(shared.course, shared.pars, shared.albatrossHole);
+    applyCourse(shared.course, shared.pars, shared.offsets, shared.albatrossHole);
   } else {
     startNewRound();
   }
@@ -80,13 +84,14 @@ function boot() {
 
 function startNewRound() {
   const generated = generateCourse();
-  applyCourse(generated.course, generated.pars, generated.albatrossHole);
+  applyCourse(generated.course, generated.pars, generated.offsets, generated.albatrossHole);
   updateCourseUrl();
 }
 
-function applyCourse(course, pars, albatrossHole) {
+function applyCourse(course, pars, offsets, albatrossHole) {
   state.course = course;
   state.pars = pars;
+  state.offsets = offsets;
   state.albatrossHole = albatrossHole;
   state.holeNumber = 1;
   state.roundOver = false;
@@ -159,9 +164,50 @@ function generateCourse() {
     course.push({ terrain: generated.terrain, blocked: generated.blocked, balls: generated.balls });
     distances.push(generated.distance);
   }
-  const albatrossHole = 1 + Math.floor(Math.random() * ROUND_LENGTH);
-  const pars = distances.map((distance, index) => distance + (index + 1 === albatrossHole ? ALBATROSS_PAR_OFFSET : PAR_OFFSET));
-  return { course, pars, albatrossHole };
+  const albatrossHole = chooseAlbatrossHole(distances, ballCounts);
+  const offsets = computeParOffsets(distances, ballCounts, albatrossHole);
+  const pars = distances.map((distance, index) => distance + offsets[index]);
+  return { course, pars, offsets, albatrossHole };
+}
+
+// The albatross hole must be a genuinely hard one -- never the guaranteed
+// 1-ball hole, never a low-optimum one -- otherwise a "+3 instead of +2"
+// gap wouldn't mean much. Falls back to relaxing the constraints only in
+// the astronomically unlikely case nothing on the course qualifies.
+function chooseAlbatrossHole(distances, ballCounts) {
+  const indices = distances.map((_, index) => index);
+  const eligible = indices.filter((index) => ballCounts[index] !== 1 && distances[index] > SMALL_OPTIMUM_THRESHOLD);
+  const fallback = indices.filter((index) => ballCounts[index] !== 1);
+  const pool = eligible.length ? eligible : (fallback.length ? fallback : indices);
+  return pool[Math.floor(Math.random() * pool.length)] + 1;
+}
+
+// Par is normally optimal + 2, except: the one albatross hole (always +3);
+// any hole with just a single ball, or an optimum of 4 or less (+1, since
+// +2 would leave too wide a gap); and, if that still leaves 6 or more
+// holes at the standard +2, a further random selection of them are pulled
+// down to +1 so at most 5 holes ever sit at the full +2 gap. The resulting
+// offsets (not the pars themselves) are what gets encoded into the course
+// URL, so a shared course reproduces identical pars without needing par
+// -- or the random reduction's outcome -- to be re-derived at decode time.
+function computeParOffsets(distances, ballCounts, albatrossHole) {
+  const offsets = distances.map((distance, index) => {
+    if (index + 1 === albatrossHole) return ALBATROSS_PAR_OFFSET;
+    if (ballCounts[index] === 1 || distance <= SMALL_OPTIMUM_THRESHOLD) return REDUCED_PAR_OFFSET;
+    return PAR_OFFSET;
+  });
+
+  const standardIndices = offsets
+    .map((offset, index) => (offset === PAR_OFFSET ? index : -1))
+    .filter((index) => index !== -1);
+
+  if (standardIndices.length > MAX_STANDARD_PAR_HOLES) {
+    const shuffled = shuffle(standardIndices);
+    const excess = standardIndices.length - MAX_STANDARD_PAR_HOLES;
+    for (let i = 0; i < excess; i += 1) offsets[shuffled[i]] = REDUCED_PAR_OFFSET;
+  }
+
+  return offsets;
 }
 
 function generateHole(ballCount, bunkerCount) {
@@ -286,18 +332,32 @@ function decodeHoleCode(token) {
   return holeFromRoleArray(roles);
 }
 
-function encodeCourse(course, albatrossHole) {
-  return [...course.map(encodeHoleCode), String(albatrossHole)].join(".");
+function encodeCourse(course, offsets) {
+  const offsetsCode = offsets.reduce((accumulator, offset) => accumulator * 3 + (offset - 1), 0).toString(36);
+  return [...course.map(encodeHoleCode), offsetsCode].join(".");
+}
+
+function decodeOffsets(token) {
+  if (!token || !/^[0-9a-z]+$/i.test(token)) return null;
+  let code = Number.parseInt(token, 36);
+  if (!Number.isSafeInteger(code) || code < 0 || code >= 3 ** ROUND_LENGTH) return null;
+  const offsets = new Array(ROUND_LENGTH);
+  for (let index = ROUND_LENGTH - 1; index >= 0; index -= 1) {
+    offsets[index] = (code % 3) + 1;
+    code = Math.floor(code / 3);
+  }
+  return offsets;
 }
 
 function decodeCourse(text) {
   if (typeof text !== "string") return null;
   const parts = text.split(".");
   if (parts.length !== ROUND_LENGTH + 1) return null;
-  const albatrossHole = Number.parseInt(parts[ROUND_LENGTH], 10);
-  if (!Number.isInteger(albatrossHole) || albatrossHole < 1 || albatrossHole > ROUND_LENGTH) return null;
+  const offsets = decodeOffsets(parts[ROUND_LENGTH]);
+  if (!offsets) return null;
 
   const holes = [];
+  const ballCounts = [];
   for (let index = 0; index < ROUND_LENGTH; index += 1) {
     const hole = decodeHoleCode(parts[index]);
     if (!hole) return null;
@@ -306,17 +366,27 @@ function decodeCourse(text) {
     const bunkerCount = hole.blocked.filter(Boolean).length;
     if (ballCount < 1 || ballCount > 3 || holeCount !== ballCount || bunkerCount < 1 || bunkerCount > 3) return null;
     holes.push(hole);
+    ballCounts.push(ballCount);
   }
 
-  const pars = [];
+  const distances = [];
   for (let index = 0; index < ROUND_LENGTH; index += 1) {
-    const hole = holes[index];
-    const distance = solve(hole.balls, hole.blocked, hole.terrain);
+    const distance = solve(holes[index].balls, holes[index].blocked, holes[index].terrain);
     if (distance === null) return null;
-    const offset = index + 1 === albatrossHole ? ALBATROSS_PAR_OFFSET : PAR_OFFSET;
-    pars.push(distance + offset);
+    distances.push(distance);
   }
-  return { course: holes, pars, albatrossHole };
+
+  // There must be exactly one albatross hole, and -- as in generation -- it
+  // must be a genuinely hard one, never the guaranteed 1-ball hole or a
+  // low-optimum hole. A course whose offsets don't satisfy this didn't come
+  // from this game's own generator, so it's rejected rather than trusted.
+  const albatrossIndices = offsets.map((offset, index) => (offset === ALBATROSS_PAR_OFFSET ? index : -1)).filter((index) => index !== -1);
+  if (albatrossIndices.length !== 1) return null;
+  const albatrossIndex = albatrossIndices[0];
+  if (ballCounts[albatrossIndex] === 1 || distances[albatrossIndex] <= SMALL_OPTIMUM_THRESHOLD) return null;
+
+  const pars = distances.map((distance, index) => distance + offsets[index]);
+  return { course: holes, pars, offsets, albatrossHole: albatrossIndex + 1 };
 }
 
 function courseFromUrl() {
@@ -328,7 +398,7 @@ function courseFromUrl() {
 
 function updateCourseUrl() {
   const url = new URL(window.location.href);
-  url.searchParams.set("course", encodeCourse(state.course, state.albatrossHole));
+  url.searchParams.set("course", encodeCourse(state.course, state.offsets));
   window.history.replaceState(null, "", url);
 }
 
@@ -418,6 +488,13 @@ function performRotation(row, column, animationDuration = 270, clockwise = true)
   state.balls = rotate(state.balls, state.terrain, row, column, clockwise);
   state.moves += 1;
   state.complete = isComplete(state.balls, state.terrain);
+  if (state.complete && state.holeNumber >= ROUND_LENGTH) {
+    // Finishing the last hole ends the round immediately, rather than
+    // waiting for a "Next hole" click that would otherwise still be sitting
+    // there labelled for a hole that no longer exists.
+    recordHole(true);
+    state.roundOver = true;
+  }
   render();
   animateRotation(row, column, clockwise, previousBalls, tileRects, animationDuration);
 }
