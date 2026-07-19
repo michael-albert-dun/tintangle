@@ -6,8 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#eef5ef">
   <title>Tangleputt</title>
-  <link rel="stylesheet" href="styles.css?v=14">
-  <script src="src/game.js?v=14" defer></script>
+  <link rel="stylesheet" href="styles.css?v=18">
+  <script src="src/game.js?v=18" defer></script>
 </head>
 
 <body>
@@ -29,11 +29,10 @@
 
       <aside id="settings-panel" class="info-panel settings-panel" hidden>
         <h2>Settings</h2>
-        <p class="settings-label">Scorecard layout</p>
-        <div class="settings-toggle" role="radiogroup" aria-label="Scorecard layout">
-          <label><input type="radio" name="scorecard-layout" value="horizontal" checked> Horizontal</label>
-          <label><input type="radio" name="scorecard-layout" value="vertical"> Vertical</label>
-        </div>
+        <label class="settings-toggle-row">
+          <input type="checkbox" id="practice-mode-toggle">
+          Practice mode
+        </label>
       </aside>
 
       <button id="info-button" class="info-button" type="button" aria-expanded="false" aria-controls="info-panel"

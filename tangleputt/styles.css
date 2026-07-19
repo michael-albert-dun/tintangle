@@ -96,10 +96,8 @@ button { font: inherit; }
 .settings-button svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; }
 
 .settings-panel { left: 14px; right: auto; }
-.settings-label { margin: 10px 0 6px; color: var(--muted); font-size: .78rem; font-weight: 650; text-transform: uppercase; letter-spacing: .03em; }
-.settings-toggle { display: grid; gap: 6px; }
-.settings-toggle label { display: flex; align-items: center; gap: 8px; color: var(--ink); font-size: .9rem; cursor: pointer; }
-.settings-toggle input { accent-color: var(--focus); cursor: pointer; }
+.settings-toggle-row { display: flex; align-items: center; gap: 8px; color: var(--ink); font-size: .9rem; font-weight: 600; cursor: pointer; }
+.settings-toggle-row input { accent-color: var(--focus); cursor: pointer; width: 16px; height: 16px; }
 
 .masthead { margin-bottom: 18px; text-align: center; }
 h1 { position: relative; display: inline-block; margin: 0; font-size: clamp(2rem, 7vw, 3.25rem); font-weight: 620; line-height: 1; }
@@ -272,15 +270,33 @@ h1 { position: relative; display: inline-block; margin: 0; font-size: clamp(2rem
 .scorecard-hole.is-par .scorecard-points { color: var(--ink); }
 .scorecard-hole.is-bogey .scorecard-points, .scorecard-hole.is-double-bogey .scorecard-points { color: #a5602f; }
 
-.scorecard-table { width: 100%; border-collapse: collapse; font-size: .8rem; }
-.scorecard-table th, .scorecard-table td { padding: 4px 6px; border-bottom: 1px solid var(--tile-border); text-align: center; }
-.scorecard-table th { color: var(--muted); font-size: .68rem; font-weight: 650; letter-spacing: .03em; text-transform: uppercase; }
-.scorecard-table td:nth-child(4) { text-align: left; }
-.scorecard-table tfoot td { border-bottom: 0; border-top: 2px solid var(--tile-border); font-weight: 700; }
-.scorecard-table tr.is-current td { background: rgba(31,122,140,.1); }
-.scorecard-table tr.is-eagle td, .scorecard-table tr.is-albatross td { color: #1f7a8c; }
-.scorecard-table tr.is-birdie td { color: #31764a; }
-.scorecard-table tr.is-bogey td, .scorecard-table tr.is-double-bogey td { color: #a5602f; }
+/* One shaft-plus-head shape, pointing "down" by default, sized relative
+   to the ball itself (its containing block, since .ball is
+   position:absolute) so "2/3 the ball's size" is literally height:66%.
+   The shape's own centre -- not its tail -- sits at the ball's centre, so
+   the leftover 34% splits into equal gaps at the tail and the tip; each
+   direction just rotates the whole thing around that centre. clip-path
+   (not border-width, which can't take percentages) is what makes
+   percentage sizing possible here. */
+.move-arrow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  width: 26%;
+  height: 66%;
+  margin-left: -13%;
+  margin-top: -33%;
+  background: #1f7a8c;
+  clip-path: polygon(38% 0%, 62% 0%, 62% 55%, 100% 55%, 50% 100%, 0% 55%, 38% 55%);
+  transform-origin: 50% 50%;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .35));
+  pointer-events: none;
+}
+.move-arrow-down { transform: rotate(0deg); }
+.move-arrow-up { transform: rotate(180deg); }
+.move-arrow-right { transform: rotate(-90deg); }
+.move-arrow-left { transform: rotate(90deg); }
 
 button:focus-visible, .title-hint:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 

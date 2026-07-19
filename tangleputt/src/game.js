@@ -34,12 +34,13 @@ const state = {
   blocked: [],
   balls: [],
   par: 0,
+  practiceOptimum: 0,
   moves: 0,
   complete: false,
   clockwise: true,
   scorecard: [],
   roundOver: false,
-  scorecardLayout: loadScorecardLayoutPreference()
+  practiceMode: loadPracticeModePreference()
 };
 const elements = {
   board: document.querySelector("#board"),
@@ -52,34 +53,50 @@ const elements = {
   infoPanel: document.querySelector("#info-panel"),
   settingsButton: document.querySelector("#settings-button"),
   settingsPanel: document.querySelector("#settings-panel"),
-  scorecardLayoutInputs: document.querySelectorAll('input[name="scorecard-layout"]')
+  practiceModeToggle: document.querySelector("#practice-mode-toggle")
 };
 
 elements.nextHole.addEventListener("click", handleNextHole);
 elements.directionButton.addEventListener("click", toggleDirection);
 elements.infoButton.addEventListener("click", toggleInfo);
 elements.settingsButton.addEventListener("click", toggleSettings);
-for (const input of elements.scorecardLayoutInputs) {
-  input.checked = input.value === state.scorecardLayout;
-  input.addEventListener("change", () => {
-    if (!input.checked) return;
-    state.scorecardLayout = input.value;
-    saveScorecardLayoutPreference(input.value);
-    renderScorecard();
-  });
-}
+elements.practiceModeToggle.checked = state.practiceMode;
+elements.practiceModeToggle.addEventListener("change", () => {
+  state.practiceMode = elements.practiceModeToggle.checked;
+  savePracticeModePreference(state.practiceMode);
+  if (state.practiceMode) startPracticeHole();
+  else startNewRound();
+});
 document.addEventListener("pointerdown", closeOutsidePanels, true);
 document.addEventListener("keydown", handleKeyDown);
 
 boot();
 
 function boot() {
+  if (state.practiceMode) {
+    startPracticeHole();
+    return;
+  }
   const shared = courseFromUrl();
   if (shared) {
     applyCourse(shared.course, shared.pars, shared.offsets, shared.albatrossHole);
   } else {
     startNewRound();
   }
+}
+
+function startPracticeHole() {
+  const ballCount = 1 + Math.floor(Math.random() * 3);
+  const bunkerCount = 1 + Math.floor(Math.random() * 3);
+  const generated = generateHole(ballCount, bunkerCount);
+  state.terrain = generated.terrain;
+  state.blocked = generated.blocked;
+  state.balls = generated.balls;
+  state.practiceOptimum = generated.distance;
+  state.moves = 0;
+  state.complete = false;
+  applyTurf();
+  render();
 }
 
 function startNewRound() {
@@ -130,6 +147,10 @@ function recordHole(completed) {
 }
 
 function handleNextHole() {
+  if (state.practiceMode) {
+    startPracticeHole();
+    return;
+  }
   if (state.roundOver) {
     startNewRound();
     return;
@@ -488,7 +509,7 @@ function performRotation(row, column, animationDuration = 270, clockwise = true)
   state.balls = rotate(state.balls, state.terrain, row, column, clockwise);
   state.moves += 1;
   state.complete = isComplete(state.balls, state.terrain);
-  if (state.complete && state.holeNumber >= ROUND_LENGTH) {
+  if (!state.practiceMode && state.complete && state.holeNumber >= ROUND_LENGTH) {
     // Finishing the last hole ends the round immediately, rather than
     // waiting for a "Next hole" click that would otherwise still be sitting
     // there labelled for a hole that no longer exists.
@@ -600,8 +621,28 @@ function render() {
   elements.directionLabel.textContent = state.clockwise ? "Fade" : "Draw";
   elements.directionLabel.classList.toggle("is-anticlockwise", !state.clockwise);
 
-  renderProgress();
-  renderScorecard();
+  if (state.practiceMode) {
+    renderPracticeProgress();
+    elements.scorecard.hidden = true;
+  } else {
+    elements.scorecard.hidden = false;
+    renderProgress();
+    renderScorecard();
+  }
+}
+
+function renderPracticeProgress() {
+  let text = `Practice · Optimum ${state.practiceOptimum} · ${state.moves} ${state.moves === 1 ? "stroke" : "strokes"}`;
+  let className = "hole-progress";
+  if (state.complete) {
+    const diff = state.moves - state.practiceOptimum;
+    text += diff === 0 ? " · Optimal!" : ` · +${diff}`;
+    className += diff === 0 ? " is-birdie" : "";
+  }
+  elements.holeProgress.textContent = text;
+  elements.holeProgress.className = className;
+  elements.nextHole.textContent = "Next hole";
+  elements.nextHole.setAttribute("aria-label", "Generate a new practice hole");
 }
 
 function renderProgress() {
@@ -632,24 +673,21 @@ function renderProgress() {
 function scorecardCellData(entry) {
   const isCurrent = !state.roundOver && entry.holeNumber === state.holeNumber && !entry.played;
   let strokesText = "–";
-  let resultText = "–";
   let pointsText = "–";
   let className = entry.played ? entry.className : "";
   if (entry.played) {
     strokesText = entry.strokes === null ? "—" : String(entry.strokes);
-    resultText = entry.label;
     pointsText = formatPoints(entry.points);
   } else if (isCurrent) {
     strokesText = String(state.moves);
     if (state.complete) {
       const tier = scoreFor(state.moves, state.par);
-      resultText = tier.label;
       pointsText = formatPoints(tier.points);
       className = tier.className;
     }
     className = `${className} is-current`.trim();
   }
-  return { strokesText, resultText, pointsText, className };
+  return { strokesText, pointsText, className };
 }
 
 // The running total should reflect a completed-but-not-yet-recorded current
@@ -677,11 +715,6 @@ function currentStrokesTotal() {
 }
 
 function renderScorecard() {
-  if (state.scorecardLayout === "vertical") renderScorecardVertical();
-  else renderScorecardHorizontal();
-}
-
-function renderScorecardHorizontal() {
   const cells = state.scorecard.map((entry) => {
     const { strokesText, pointsText, className } = scorecardCellData(entry);
     return `<div class="scorecard-hole ${className}">
@@ -701,32 +734,6 @@ function renderScorecardHorizontal() {
     </div>`;
 
   elements.scorecard.innerHTML = cells + totalCell;
-}
-
-function renderScorecardVertical() {
-  const rows = state.scorecard.map((entry) => {
-    const { strokesText, resultText, pointsText, className } = scorecardCellData(entry);
-    return `<tr class="${className}">
-      <td>${entry.holeNumber}</td>
-      <td>${entry.par}</td>
-      <td>${strokesText}</td>
-      <td>${resultText}</td>
-      <td>${pointsText}</td>
-    </tr>`;
-  }).join("");
-
-  const total = currentTotal();
-  elements.scorecard.innerHTML = `<table class="scorecard-table">
-      <thead><tr><th>Hole</th><th>Par</th><th>Strokes</th><th>Result</th><th>Pts</th></tr></thead>
-      <tbody>${rows}</tbody>
-      <tfoot><tr>
-        <td>Total</td>
-        <td>${courseParTotal()}</td>
-        <td>${currentStrokesTotal()}</td>
-        <td></td>
-        <td>${formatPoints(total)}</td>
-      </tr></tfoot>
-    </table>`;
 }
 
 function toggleDirection() {
@@ -760,11 +767,48 @@ function makeRotationButton(row, column) {
     : `Rotate the four squares around this corner ${state.clockwise ? "clockwise" : "anticlockwise"} (rows ${row + 1}–${row + 2}, columns ${column + 1}–${column + 2})`);
   button.innerHTML = `<span class="rotation-disc"></span>${rotationIcon()}`;
   button.addEventListener("click", () => rotateAt(row, column));
+  button.addEventListener("pointerenter", () => {
+    if (disabled || !state.practiceMode) return;
+    showMoveArrows(row, column);
+  });
+  button.addEventListener("pointerleave", () => hideMoveArrows(row, column));
   return button;
 }
 
 function rotationIcon() {
   return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.8 9.8A7.2 7.2 0 1 0 19 14"/><path d="M18.8 4.5v5.3h-5.3"/></svg>';
+}
+
+// Practice-mode-only preview: on hover, overlay a small arrow on every ball
+// that would actually move, pointing the direction it'd travel. Only ever
+// attached to enabled buttons, and any legal rotation only ever moves a
+// ball to its immediately adjacent cell (a move requiring a longer skip
+// past a sunk ball is already illegal), so a fixed per-corner direction
+// mapping is all that's needed -- no need to recompute the general
+// skip-aware routing here.
+const CLOCKWISE_MOVE_DIRECTIONS = ["right", "down", "left", "up"];
+const ANTICLOCKWISE_MOVE_DIRECTIONS = ["down", "left", "up", "right"];
+
+function showMoveArrows(row, column) {
+  const cells = cornerCells(row, column);
+  const directions = state.clockwise ? CLOCKWISE_MOVE_DIRECTIONS : ANTICLOCKWISE_MOVE_DIRECTIONS;
+  cells.forEach((position, index) => {
+    if (!state.balls[position] || state.terrain[position]) return;
+    const tile = elements.board.querySelector(`[data-index="${position}"]`);
+    const ball = tile && tile.querySelector(".ball");
+    if (!ball) return;
+    const arrow = document.createElement("span");
+    arrow.className = `move-arrow move-arrow-${directions[index]}`;
+    ball.appendChild(arrow);
+  });
+}
+
+function hideMoveArrows(row, column) {
+  for (const position of cornerCells(row, column)) {
+    const tile = elements.board.querySelector(`[data-index="${position}"]`);
+    const arrow = tile && tile.querySelector(".move-arrow");
+    if (arrow) arrow.remove();
+  }
 }
 
 function tileRectangles() {
@@ -818,18 +862,18 @@ function closeOutsidePanels(event) {
     closePanel(elements.settingsPanel, elements.settingsButton);
   }
 }
-function loadScorecardLayoutPreference() {
+function loadPracticeModePreference() {
   try {
-    return window.localStorage.getItem("tangleputt-scorecard-layout") === "vertical" ? "vertical" : "horizontal";
+    return window.localStorage.getItem("tangleputt-practice-mode") === "true";
   } catch (error) {
-    return "horizontal";
+    return false;
   }
 }
-function saveScorecardLayoutPreference(value) {
+function savePracticeModePreference(value) {
   try {
-    window.localStorage.setItem("tangleputt-scorecard-layout", value);
+    window.localStorage.setItem("tangleputt-practice-mode", String(value));
   } catch (error) {
-    console.warn("Could not save scorecard layout preference", error);
+    console.warn("Could not save practice mode preference", error);
   }
 }
 function handleKeyDown(event) {
